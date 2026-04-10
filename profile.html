@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admitly — Build Your Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ruby:        #E0115F;
+      --ruby-deep:   #A80D47;
+      --ruby-soft:   #F24080;
+      --ruby-dim:    rgba(224, 17, 95, 0.18);
+      --void:        #06080F;
+      --void-2:      #0D1018;
+      --void-3:      #141720;
+      --void-4:      #1C2030;
+      --void-5:      #252840;
+      --cream:       #F3E5AB;
+      --cream-dim:   #D9C97A;
+      --cream-ghost: rgba(243, 229, 171, 0.08);
+      --slate:       #8B92A8;
+      --slate-dim:   #555C72;
+      --border:      rgba(243, 229, 171, 0.1);
+      --border-mid:  rgba(243, 229, 171, 0.22);
+      --success:     #1A8C5B;
+      --success-dim: rgba(26,140,91,0.15);
+      --warn:        #C9860A;
+      --warn-dim:    rgba(201,134,10,0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--cream);
+      background: var(--void);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ─────────────────────────────────────────────── */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 clamp(1.5rem, 5vw, 3rem);
+      height: 60px;
+      background: rgba(6,8,15,0.9);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    .logo {
+      font-family: 'Lora', serif; font-size: 1.15rem; font-weight: 600;
+      color: var(--cream); text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .logo-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--ruby); box-shadow: 0 0 7px var(--ruby);
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+
+    .save-status {
+      font-size: 12px; color: var(--slate-dim);
+      display: flex; align-items: center; gap: 6px;
+      transition: all .3s;
+    }
+
+    .save-status.saving { color: var(--warn); }
+    .save-status.saved  { color: var(--success); }
+
+    .save-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* ── Layout ──────────────────────────────────────────── */
+    .page {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── Sidebar ─────────────────────────────────────────── */
+    .sidebar {
+      background: var(--void-2);
+      border-right: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      position: sticky;
+      top: 60px;
+      height: calc(100vh - 60px);
+      overflow-y: auto;
+    }
+
+    .sidebar-title {
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: .07em;
+      color: var(--slate-dim); margin-bottom: 1.25rem;
+    }
+
+    .step-nav { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+
+    .step-nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 8px;
+      cursor: pointer; transition: background .15s;
+      text-decoration: none;
+    }
+
+    .step-nav-item:hover { background: var(--cream-ghost); }
+    .step-nav-item.active { background: var(--ruby-dim); }
+
+    .step-nav-circle {
+      width: 22px; height: 22px; border-radius: 50%;
+      border: 1px solid var(--border-mid);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 500; color: var(--slate);
+      flex-shrink: 0; transition: all .2s;
+    }
+
+    .step-nav-item.done .step-nav-circle {
+      background: var(--success); border-color: var(--success); color: #fff;
+    }
+
+    .step-nav-item.active .step-nav-circle {
+      background: var(--ruby); border-color: var(--ruby); color: #fff;
+    }
+
+    .step-nav-label {
+      font-size: 13px; color: var(--slate); transition: color .15s;
+    }
+
+    .step-nav-item.active .step-nav-label { color: var(--cream); font-weight: 500; }
+    .step-nav-item.done  .step-nav-label  { color: var(--slate); }
+
+    .sidebar-divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+
+    .profile-completeness { padding: 0 4px; }
+
+    .completeness-label {
+      font-size: 11px; color: var(--slate-dim);
+      display: flex; justify-content: space-between; margin-bottom: 8px;
+    }
+
+    .completeness-track {
+      height: 4px; background: var(--void-4);
+      border-radius: 2px; overflow: hidden;
+    }
+
+    .completeness-fill {
+      height: 100%; background: var(--ruby);
+      border-radius: 2px; transition: width .4s ease;
+    }
+
+    /* ── Main content ────────────────────────────────────── */
+    .main {
+      padding: 2.5rem clamp(1.5rem, 4vw, 3rem);
+      max-width: 720px;
+    }
+
+    /* ── Step panel ──────────────────────────────────────── */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    .step-eyebrow {
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: .07em;
+      color: var(--ruby-soft); margin-bottom: .5rem;
+    }
+
+    .step-title {
+      font-family: 'Lora', serif;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 600; line-height: 1.2;
+      color: var(--cream); margin-bottom: .5rem;
+    }
+
+    .step-title em { font-style: italic; color: var(--ruby-soft); }
+
+    .step-desc {
+      font-size: 14px; color: var(--slate);
+      line-height: 1.7; margin-bottom: 2rem;
+      max-width: 540px;
+    }
+
+    /* ── Form elements ───────────────────────────────────── */
+    .field { margin-bottom: 1.25rem; }
+
+    .field label {
+      display: block; font-size: 13px; font-weight: 500;
+      color: var(--cream); margin-bottom: 5px;
+    }
+
+    .field .hint {
+      font-size: 12px; color: var(--slate-dim);
+      margin-bottom: 6px; line-height: 1.5;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      font-family: 'DM Sans', sans-serif; font-size: 14px;
+      background: var(--void-3);
+      color: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      transition: border-color .2s;
+      outline: none;
+      appearance: none;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder { color: var(--slate-dim); }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--ruby);
+      box-shadow: 0 0 0 3px var(--ruby-dim);
+    }
+
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238B92A8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    .field select option { background: var(--void-3); color: var(--cream); }
+
+    .field textarea { resize: vertical; min-height: 100px; line-height: 1.65; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+    /* ── Section dividers inside steps ───────────────────── */
+    .form-section {
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: .07em;
+      color: var(--slate-dim);
+      padding-bottom: .6rem;
+      border-bottom: 1px solid var(--border);
+      margin: 1.75rem 0 1.25rem;
+    }
+
+    /* ── Chip selectors ──────────────────────────────────── */
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+
+    .chip {
+      padding: 6px 14px; border-radius: 20px;
+      border: 1px solid var(--border);
+      font-size: 13px; cursor: pointer;
+      color: var(--slate); background: var(--void-3);
+      transition: all .15s; user-select: none;
+    }
+
+    .chip:hover { border-color: var(--border-mid); color: var(--cream); }
+    .chip.selected { background: var(--ruby-dim); border-color: var(--ruby); color: var(--ruby-soft); }
+
+    /* ── Activity rows ───────────────────────────────────── */
+    .activity-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+
+    .activity-row {
+      background: var(--void-3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 90px 32px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .activity-row input,
+    .activity-row select {
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      background: var(--void-4); color: var(--cream);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 7px 10px; outline: none;
+      transition: border-color .2s; width: 100%;
+    }
+
+    .activity-row input:focus,
+    .activity-row select:focus { border-color: var(--ruby); }
+
+    .activity-row select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238B92A8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 26px;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    .activity-row select option { background: var(--void-3); }
+
+    .del-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--slate-dim); font-size: 18px; line-height: 1;
+      padding: 4px; border-radius: 4px; transition: color .15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .del-btn:hover { color: var(--ruby-soft); }
+
+    .add-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 500; color: var(--ruby-soft);
+      cursor: pointer; background: none; border: none;
+      font-family: 'DM Sans', sans-serif;
+      padding: 4px 0; transition: color .15s;
+    }
+
+    .add-btn:hover { color: var(--ruby); }
+
+    /* ── Word counter ────────────────────────────────────── */
+    .word-counter {
+      font-size: 11px; color: var(--slate-dim);
+      text-align: right; margin-top: 4px;
+    }
+
+    .word-counter.over { color: var(--ruby-soft); }
+
+    /* ── Info box ────────────────────────────────────────── */
+    .info-box {
+      background: var(--void-3);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--ruby);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 14px;
+      font-size: 13px; color: var(--slate);
+      line-height: 1.65; margin-bottom: 1.25rem;
+    }
+
+    /* ── Step nav buttons ────────────────────────────────── */
+    .step-actions {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 2.5rem; padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+      border-radius: 9px; padding: .65rem 1.4rem;
+      cursor: pointer; transition: all .2s; border: none; text-decoration: none;
+    }
+
+    .btn-back {
+      background: transparent;
+      border: 1px solid var(--border-mid);
+      color: var(--slate);
+    }
+
+    .btn-back:hover { color: var(--cream); border-color: var(--border-mid); background: var(--cream-ghost); }
+
+    .btn-next {
+      background: var(--ruby); color: #fff;
+    }
+
+    .btn-next:hover { background: var(--ruby-deep); }
+
+    .btn-next:disabled {
+      opacity: .45; cursor: not-allowed;
+    }
+
+    .btn-finish {
+      background: var(--ruby); color: #fff;
+      font-size: 15px; padding: .8rem 2rem; border-radius: 10px;
+    }
+
+    .btn-finish:hover { background: var(--ruby-deep); }
+
+    /* ── Finish screen ───────────────────────────────────── */
+    .finish-screen { text-align: center; padding: 3rem 1rem; }
+
+    .finish-icon {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--ruby-dim); margin: 0 auto 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .finish-icon svg { width: 26px; height: 26px; stroke: var(--ruby-soft); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .finish-title {
+      font-family: 'Lora', serif; font-size: 2rem; font-weight: 600;
+      color: var(--cream); margin-bottom: .75rem;
+    }
+
+    .finish-title em { font-style: italic; color: var(--ruby-soft); }
+
+    .finish-sub {
+      font-size: 15px; color: var(--slate); line-height: 1.7;
+      margin-bottom: 2rem; max-width: 420px;
+      margin-left: auto; margin-right: auto;
+    }
+
+    .summary-chips {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; margin-bottom: 2rem;
+    }
+
+    .summary-chip {
+      background: var(--void-3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 14px; font-size: 13px; color: var(--slate);
+    }
+
+    /* ── Toast ───────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--void-3); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 18px;
+      font-size: 13px; color: var(--cream);
+      display: flex; align-items: center; gap: 8px;
+      transform: translateY(80px); opacity: 0;
+      transition: all .3s ease;
+      z-index: 200;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (max-width: 700px) {
+      .page { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .activity-row { grid-template-columns: 1fr 32px; grid-template-rows: auto auto auto; }
+      .activity-row input:first-child { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Nav ─────────────────────────────────────────────── -->
+  <nav>
+    <a href="index.html" class="logo"><span class="logo-dot"></span>Admitly</a>
+    <div class="nav-right">
+      <div class="save-status" id="saveStatus">
+        <span class="save-dot"></span>
+        <span id="saveText">All changes saved</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ── Sidebar ────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Your profile</div>
+      <ul class="step-nav" id="stepNav">
+        <li class="step-nav-item active" data-step="0" onclick="goToStep(0)">
+          <div class="step-nav-circle">1</div>
+          <span class="step-nav-label">Background</span>
+        </li>
+        <li class="step-nav-item" data-step="1" onclick="goToStep(1)">
+          <div class="step-nav-circle">2</div>
+          <span class="step-nav-label">Academics</span>
+        </li>
+        <li class="step-nav-item" data-step="2" onclick="goToStep(2)">
+          <div class="step-nav-circle">3</div>
+          <span class="step-nav-label">Activities</span>
+        </li>
+        <li class="step-nav-item" data-step="3" onclick="goToStep(3)">
+          <div class="step-nav-circle">4</div>
+          <span class="step-nav-label">Essays</span>
+        </li>
+        <li class="step-nav-item" data-step="4" onclick="goToStep(4)">
+          <div class="step-nav-circle">5</div>
+          <span class="step-nav-label">Goals</span>
+        </li>
+      </ul>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="profile-completeness">
+        <div class="completeness-label">
+          <span>Profile complete</span>
+          <span id="completenessNum">0%</span>
+        </div>
+        <div class="completeness-track">
+          <div class="completeness-fill" id="completenessFill" style="width:0%"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Main ───────────────────────────────────────────── -->
+    <main class="main">
+
+      <!-- Step 1: Background -->
+      <div class="step-panel active" id="panel-0">
+        <div class="step-eyebrow">Step 1 of 5</div>
+        <h1 class="step-title">Let's start with <em>you</em></h1>
+        <p class="step-desc">This helps us calibrate everything for your situation — country, school system, and background all matter in US admissions.</p>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>First name</label>
+            <input id="firstName" type="text" placeholder="Aisha" oninput="save()" />
+          </div>
+          <div class="field">
+            <label>Last name</label>
+            <input id="lastName" type="text" placeholder="Ibrahim" oninput="save()" />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Country</label>
+            <select id="country" onchange="save()">
+              <option value="">Select country…</option>
+              <option>Afghanistan</option><option>Albania</option><option>Algeria</option>
+              <option>Argentina</option><option>Armenia</option><option>Azerbaijan</option>
+              <option>Bangladesh</option><option>Bolivia</option><option>Brazil</option>
+              <option>Cambodia</option><option>Cameroon</option><option>Chile</option>
+              <option>China</option><option>Colombia</option><option>Congo</option>
+              <option>Ecuador</option><option>Egypt</option><option>Ethiopia</option>
+              <option>Georgia</option><option>Ghana</option><option>Guatemala</option>
+              <option>Honduras</option><option>India</option><option>Indonesia</option>
+              <option>Iran</option><option>Iraq</option><option>Jordan</option>
+              <option>Kazakhstan</option><option>Kenya</option><option>Kyrgyzstan</option>
+              <option>Lebanon</option><option>Libya</option><option>Malaysia</option>
+              <option>Mexico</option><option>Mongolia</option><option>Morocco</option>
+              <option>Mozambique</option><option>Myanmar</option><option>Nepal</option>
+              <option>Nicaragua</option><option>Nigeria</option><option>Pakistan</option>
+              <option>Panama</option><option>Paraguay</option><option>Peru</option>
+              <option>Philippines</option><option>Rwanda</option><option>Senegal</option>
+              <option>Sierra Leone</option><option>Sri Lanka</option><option>Sudan</option>
+              <option>Syria</option><option>Tajikistan</option><option>Tanzania</option>
+              <option>Thailand</option><option>Tunisia</option><option>Turkey</option>
+              <option>Turkmenistan</option><option>Uganda</option><option>Ukraine</option>
+              <option>Uzbekistan</option><option>Venezuela</option><option>Vietnam</option>
+              <option>Yemen</option><option>Zambia</option><option>Zimbabwe</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>City</label>
+            <input id="city" type="text" placeholder="Lagos" oninput="save()" />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Current school</label>
+            <input id="school" type="text" placeholder="Federal Government College…" oninput="save()" />
+          </div>
+          <div class="field">
+            <label>Current grade</label>
+            <select id="grade" onchange="save()">
+              <option value="">Select…</option>
+              <option>Grade 9 (Freshman)</option>
+              <option>Grade 10 (Sophomore)</option>
+              <option>Grade 11 (Junior)</option>
+              <option>Grade 12 (Senior)</option>
+              <option>Gap year / graduated</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Are you a first-generation college student?</label>
+          <div class="hint">First in your immediate family to attend university.</div>
+          <div class="chip-group" id="firstGenGroup">
+            <div class="chip" onclick="selectChip('firstGenGroup','firstGen','yes',this)">Yes — first in my family</div>
+            <div class="chip" onclick="selectChip('firstGenGroup','firstGen','no',this)">No, someone in my family went to university</div>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <span></span>
+          <button class="btn btn-next" onclick="nextStep()">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Academics -->
+      <div class="step-panel" id="panel-1">
+        <div class="step-eyebrow">Step 2 of 5</div>
+        <h1 class="step-title">Your <em>academic</em> profile</h1>
+        <p class="step-desc">Enter what you have. Don't worry if you haven't taken every test — we'll tell you which ones matter for your target schools.</p>
+
+        <div class="form-section">GPA</div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Cumulative GPA</label>
+            <div class="hint">Convert to 4.0 scale if needed — we'll help if your system is different.</div>
+            <input id="gpa" type="number" step="0.01" min="0" max="4.0" placeholder="3.80" oninput="save()" />
+          </div>
+          <div class="field">
+            <label>Grading scale</label>
+            <select id="gradingScale" onchange="save()">
+              <option value="">Select…</option>
+              <option>4.0 scale</option>
+              <option>5.0 scale (weighted)</option>
+              <option>100-point scale</option>
+              <option>A–F letter grades</option>
+              <option>WAEC / NECO grading</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-section">Standardized tests</div>
+
+        <div class="grid-3">
+          <div class="field">
+            <label>SAT total</label>
+            <div class="hint">400–1600. Leave blank if not taken.</div>
+            <input id="sat" type="number" placeholder="1380" oninput="save()" />
+          </div>
+          <div class="field">
+            <label>ACT composite</label>
+            <div class="hint">1–36.</div>
+            <input id="act" type="number" placeholder="30" oninput="save()" />
+          </div>
+          <div class="field">
+            <label>TOEFL / IELTS</label>
+            <div class="hint">Leave blank if native English speaker.</div>
+            <input id="toefl" placeholder="105 / 7.5" oninput="save()" />
+          </div>
+        </div>
+
+        <div class="form-section">Curriculum</div>
+
+        <div class="grid-3">
+          <div class="field">
+            <label>IB predicted score</label>
+            <div class="hint">Out of 45. Leave blank if not IB.</div>
+            <input id="ib" type="number" placeholder="38" oninput="save()" />
+          </div>
+          <div class="field">
+            <label>AP courses taken</label>
+            <div class="hint">Total number taken or planned.</div>
+            <input id="ap" type="number" placeholder="4" oninput="save()" />
+          </div>
+          <div class="field">
+            <label>A-Levels</label>
+            <div class="hint">Number of A-Level subjects.</div>
+            <input id="alevels" type="number" placeholder="3" oninput="save()" />
+          </div>
+        </div>
+
+        <div class="info-box">
+          No SAT yet? That's okay — many schools are test-optional. But a score of 1350+ can significantly improve your chances at match schools. We'll factor in whether you have a test when building your list.
+        </div>
+
+        <div class="step-actions">
+          <button class="btn btn-back" onclick="prevStep()">← Back</button>
+          <button class="btn btn-next" onclick="nextStep()">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Activities -->
+      <div class="step-panel" id="panel-2">
+        <div class="step-eyebrow">Step 3 of 5</div>
+        <h1 class="step-title">Extracurriculars &amp; <em>activities</em></h1>
+        <p class="step-desc">List your most meaningful activities — clubs, sports, competitions, volunteering, jobs, research, anything. US admissions values leadership, commitment, and impact.</p>
+
+        <div class="activity-list" id="activityList"></div>
+        <button class="add-btn" onclick="addActivity()">+ Add activity</button>
+
+        <div class="info-box" style="margin-top:1.5rem;">
+          Tip: Don't just list participation — briefly describe your role and impact. "President" beats "Member". We'll help you frame each activity for your applications later.
+        </div>
+
+        <div class="step-actions">
+          <button class="btn btn-back" onclick="prevStep()">← Back</button>
+          <button class="btn btn-next" onclick="nextStep()">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Essays -->
+      <div class="step-panel" id="panel-3">
+        <div class="step-eyebrow">Step 4 of 5</div>
+        <h1 class="step-title">Your <em>essays</em></h1>
+        <p class="step-desc">Paste drafts if you have them, or write a few sentences of ideas. This is where international students most often lose points — we'll help you fix that.</p>
+
+        <div class="field">
+          <label>Common App personal statement</label>
+          <div class="hint">650 words max. This goes to every school. Tell your story — who you are, not just what you've achieved.</div>
+          <textarea id="personalStatement" rows="10" placeholder="Paste your draft here, or write a few sentences about what you'd want to say. What experience shaped who you are? What do you want a US admissions officer to understand about you that isn't obvious from your grades?" oninput="save(); countWords('personalStatement','psCount',650)"></textarea>
+          <div class="word-counter" id="psCount">0 / 650 words</div>
+        </div>
+
+        <div class="field">
+          <label>Why this major? <span style="font-weight:400;color:var(--slate-dim);font-size:12px">— optional for now</span></label>
+          <div class="hint">Many schools ask why you want to study your chosen field. A rough draft or a few key ideas is enough for now.</div>
+          <textarea id="whyMajor" rows="5" placeholder="e.g. I became interested in CS after building a small weather app to help my family's farm predict rainfall…" oninput="save(); countWords('whyMajor','whyCount',300)"></textarea>
+          <div class="word-counter" id="whyCount">0 / 300 words</div>
+        </div>
+
+        <div class="step-actions">
+          <button class="btn btn-back" onclick="prevStep()">← Back</button>
+          <button class="btn btn-next" onclick="nextStep()">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step 5: Goals -->
+      <div class="step-panel" id="panel-4">
+        <div class="step-eyebrow">Step 5 of 5</div>
+        <h1 class="step-title">Goals &amp; <em>preferences</em></h1>
+        <p class="step-desc">The last piece — this shapes your school list and chance scores directly.</p>
+
+        <div class="field">
+          <label>Intended major(s)</label>
+          <div class="hint">Select up to 3. You can change your mind — it doesn't lock you in.</div>
+          <div class="chip-group" id="majorsGroup">
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Computer Science</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Engineering</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Business</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Economics</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Biology</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Pre-Med</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Mathematics</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Psychology</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Political Science</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">International Relations</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Environmental Science</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Architecture</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Film &amp; Media</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Philosophy</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Sociology</div>
+            <div class="chip" onclick="toggleMulti('majorsGroup','majors',this,3)">Undecided</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Annual budget (tuition + living)</label>
+            <div class="hint">Include financial aid you'd need. This is private and shapes your list.</div>
+            <select id="budget" onchange="save()">
+              <option value="">Select range…</option>
+              <option>Under $20,000/yr (need significant aid)</option>
+              <option>$20,000–$35,000/yr</option>
+              <option>$35,000–$55,000/yr</option>
+              <option>$55,000+ / no budget constraint</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Application timeline</label>
+            <select id="timeline" onchange="save()">
+              <option value="">Select…</option>
+              <option>Applying this fall (Class of 2026)</option>
+              <option>Applying next fall (Class of 2027)</option>
+              <option>Applying in 2+ years</option>
+              <option>Just exploring for now</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>What matters most to you in a university?</label>
+          <div class="chip-group" id="valuesGroup">
+            <div class="chip" onclick="toggleMulti('valuesGroup','values',this,99)">Financial aid available</div>
+            <div class="chip" onclick="toggleMulti('valuesGroup','values',this,99)">Strong research opportunities</div>
+            <div class="chip" onclick="toggleMulti('valuesGroup','values',this,99)">Large international community</div>
+            <div class="chip" onclick="toggleMulti('valuesGroup','values',this,99)">Small class sizes</div>
+            <div class="chip" onclick="toggleMulti('valuesGroup','values',this,99)">Co-op / internship programs</div>
+            <div class="chip" onclick="toggleMulti('valuesGroup','values',this,99)">Urban campus</div>
+            <div class="chip" onclick="toggleMulti('valuesGroup','values',this,99)">Strong alumni network</div>
+            <div class="chip" onclick="toggleMulti('valuesGroup','values',this,99)">Sports &amp; campus life</div>
+            <div class="chip" onclick="toggleMulti('valuesGroup','values',this,99)">Close to industry / tech hubs</div>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button class="btn btn-back" onclick="prevStep()">← Back</button>
+          <button class="btn btn-finish" onclick="finish()">Complete profile →</button>
+        </div>
+      </div>
+
+      <!-- Finish screen -->
+      <div class="step-panel" id="panel-finish">
+        <div class="finish-screen">
+          <div class="finish-icon">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h1 class="finish-title">Profile <em>complete!</em></h1>
+          <p class="finish-sub">Your profile has been saved. Next step: see your personalized school list and admission chances.</p>
+          <div class="summary-chips" id="summaryChips"></div>
+          <a href="results.html" class="btn btn-finish">See my school list + chances →</a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="toast-dot"></span>
+    <span id="toastMsg">Profile saved</span>
+  </div>
+
+  <script>
+    // ── State ─────────────────────────────────────────────
+    let currentStep = 0;
+    const TOTAL_STEPS = 5;
+
+    const state = {
+      firstName: '', lastName: '', country: '', city: '', school: '',
+      grade: '', firstGen: '',
+      gpa: '', gradingScale: '', sat: '', act: '', toefl: '', ib: '', ap: '', alevels: '',
+      activities: [{ name: '', role: '', years: '1' }],
+      personalStatement: '', whyMajor: '',
+      majors: [], budget: '', timeline: '', values: []
+    };
+
+    // ── LocalStorage persistence ──────────────────────────
+    function save() {
+      collectFields();
+      try {
+        localStorage.setItem('admitly_profile', JSON.stringify(state));
+        setSaveStatus('saved', 'All changes saved');
+      } catch(e) {
+        setSaveStatus('saving', 'Could not save');
+      }
+      updateCompleteness();
+    }
+
+    function loadSaved() {
+      const raw = localStorage.getItem('admitly_profile');
+      if (!raw) return;
+      try {
+        const saved = JSON.parse(raw);
+        Object.assign(state, saved);
+        restoreFields();
+        updateCompleteness();
+      } catch(e) {}
+    }
+
+    function collectFields() {
+      const ids = ['firstName','lastName','country','city','school','grade',
+                   'gpa','gradingScale','sat','act','toefl','ib','ap','alevels',
+                   'personalStatement','whyMajor','budget','timeline'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) state[id] = el.value;
+      });
+      // activities collected live via addActivity/removeActivity
+    }
+
+    function restoreFields() {
+      const ids = ['firstName','lastName','country','city','school','grade',
+                   'gpa','gradingScale','sat','act','toefl','ib','ap','alevels',
+                   'personalStatement','whyMajor','budget','timeline'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && state[id]) el.value = state[id];
+      });
+
+      // restore chips
+      if (state.firstGen) restoreSingleChip('firstGenGroup', 'firstGen', state.firstGen);
+      if (state.majors.length) restoreMultiChips('majorsGroup', state.majors);
+      if (state.values.length) restoreMultiChips('valuesGroup', state.values);
+
+      // restore activities
+      if (state.activities && state.activities.length) {
+        renderActivities();
+      }
+
+      // restore word counts
+      countWords('personalStatement', 'psCount', 650);
+      countWords('whyMajor', 'whyCount', 300);
+    }
+
+    function restoreSingleChip(groupId, key, val) {
+      document.querySelectorAll(`#${groupId} .chip`).forEach(c => {
+        if (c.textContent.trim().toLowerCase().startsWith(val)) {
+          c.classList.add('selected');
+        }
+      });
+    }
+
+    function restoreMultiChips(groupId, vals) {
+      document.querySelectorAll(`#${groupId} .chip`).forEach(c => {
+        if (vals.includes(c.textContent.trim())) c.classList.add('selected');
+      });
+    }
+
+    // ── Save status indicator ─────────────────────────────
+    let saveTimer;
+    function setSaveStatus(type, msg) {
+      const el = document.getElementById('saveStatus');
+      const txt = document.getElementById('saveText');
+      el.className = `save-status ${type}`;
+      txt.textContent = msg;
+      clearTimeout(saveTimer);
+      if (type === 'saved') {
+        saveTimer = setTimeout(() => {
+          el.className = 'save-status';
+          txt.textContent = 'All changes saved';
+        }, 2000);
+      }
+    }
+
+    // ── Completeness ──────────────────────────────────────
+    function updateCompleteness() {
+      const checks = [
+        state.firstName, state.country, state.grade,
+        state.gpa,
+        state.activities.some(a => a.name),
+        state.personalStatement.length > 50,
+        state.majors.length > 0, state.budget
+      ];
+      const done = checks.filter(Boolean).length;
+      const pct = Math.round(done / checks.length * 100);
+      document.getElementById('completenessFill').style.width = pct + '%';
+      document.getElementById('completenessNum').textContent = pct + '%';
+    }
+
+    // ── Step navigation ───────────────────────────────────
+    function goToStep(n) {
+      if (n > currentStep + 1) return; // can't skip ahead
+      save();
+      showStep(n);
+    }
+
+    function nextStep() {
+      save();
+      if (currentStep < TOTAL_STEPS - 1) showStep(currentStep + 1);
+    }
+
+    function prevStep() {
+      save();
+      if (currentStep > 0) showStep(currentStep - 1);
+    }
+
+    function showStep(n) {
+      // hide all panels
+      document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById(`panel-${n}`).classList.add('active');
+
+      // update sidebar
+      document.querySelectorAll('.step-nav-item').forEach((item, i) => {
+        item.classList.remove('active', 'done');
+        if (i < n)       item.classList.add('done');
+        else if (i === n) item.classList.add('active');
+
+        const circle = item.querySelector('.step-nav-circle');
+        if (i < n) circle.textContent = '✓';
+        else circle.textContent = i + 1;
+      });
+
+      currentStep = n;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function finish() {
+      save();
+      // show finish panel
+      document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-finish').classList.add('active');
+      document.querySelectorAll('.step-nav-item').forEach(item => {
+        item.classList.remove('active');
+        item.classList.add('done');
+        item.querySelector('.step-nav-circle').textContent = '✓';
+      });
+
+      // build summary chips
+      const chips = [
+        state.country || '—',
+        state.gpa ? `GPA ${state.gpa}` : 'No GPA yet',
+        state.sat ? `SAT ${state.sat}` : 'No SAT yet',
+        state.majors.length ? state.majors.slice(0,2).join(', ') : 'Undecided',
+        `${state.activities.filter(a=>a.name).length} activities`
+      ];
+      document.getElementById('summaryChips').innerHTML =
+        chips.map(c => `<div class="summary-chip">${c}</div>`).join('');
+
+      showToast('Profile saved successfully!');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── Chip helpers ──────────────────────────────────────
+    function selectChip(groupId, key, val, el) {
+      document.querySelectorAll(`#${groupId} .chip`).forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      state[key] = val;
+      save();
+    }
+
+    function toggleMulti(groupId, key, el, max) {
+      const val = el.textContent.trim();
+      if (el.classList.contains('selected')) {
+        el.classList.remove('selected');
+        state[key] = state[key].filter(v => v !== val);
+      } else {
+        if (state[key].length >= max) return;
+        el.classList.add('selected');
+        state[key].push(val);
+      }
+      save();
+    }
+
+    // ── Word counter ──────────────────────────────────────
+    function countWords(inputId, counterId, max) {
+      const el = document.getElementById(inputId);
+      const counter = document.getElementById(counterId);
+      if (!el || !counter) return;
+      const words = el.value.trim().split(/\s+/).filter(Boolean).length;
+      counter.textContent = `${words} / ${max} words`;
+      counter.classList.toggle('over', words > max);
+    }
+
+    // ── Activities ────────────────────────────────────────
+    function renderActivities() {
+      const list = document.getElementById('activityList');
+      list.innerHTML = state.activities.map((a, i) => `
+        <div class="activity-row">
+          <input placeholder="Activity name (e.g. Math Olympiad, Debate Club)" value="${escHtml(a.name)}"
+            oninput="state.activities[${i}].name=this.value;save()" />
+          <input placeholder="Your role (e.g. Team Captain, Founder)" value="${escHtml(a.role)}"
+            oninput="state.activities[${i}].role=this.value;save()" />
+          <select onchange="state.activities[${i}].years=this.value;save()">
+            ${['1 yr','2 yrs','3 yrs','4+ yrs'].map((y,yi) =>
+              `<option value="${yi+1}" ${a.years==yi+1?'selected':''}>${y}</option>`
+            ).join('')}
+          </select>
+          <button class="del-btn" onclick="removeActivity(${i})" title="Remove">×</button>
+        </div>`).join('');
+    }
+
+    function addActivity() {
+      state.activities.push({ name: '', role: '', years: '1' });
+      renderActivities();
+    }
+
+    function removeActivity(i) {
+      if (state.activities.length <= 1) return;
+      state.activities.splice(i, 1);
+      renderActivities();
+      save();
+    }
+
+    function escHtml(s) {
+      return (s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+    }
+
+    // ── Toast ─────────────────────────────────────────────
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ── Init ──────────────────────────────────────────────
+    renderActivities();
+    loadSaved();
+  </script>
+
+</body>
+</html>
