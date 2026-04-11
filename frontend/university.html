@@ -191,7 +191,7 @@ async function init() {
   ]);
 
   const prof = profile || JSON.parse(localStorage.getItem('uj_profile_local') || '{}');
-  const uni  = unis.find(u => u.id === uniId);
+  const uni  = unis.find(u => String(u.scorecard_id) === uniId || u.id === uniId || String(u.id) === uniId);
 
   if (!uni) {
     document.getElementById('uniLayout').innerHTML = `

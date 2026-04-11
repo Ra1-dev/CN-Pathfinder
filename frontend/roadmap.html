@@ -9,468 +9,327 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.road-layout { max-width:920px; margin:0 auto; padding:2.5rem clamp(1.5rem,5vw,3rem) 4rem; }
+body{background:var(--bg);}
+.road-wrap{max-width:680px;margin:0 auto;padding:0 clamp(1rem,4vw,2rem) 4rem;}
 
-/* hero */
-.road-hero {
-  background:var(--bg2); border:1px solid var(--border);
-  border-radius:var(--radius-lg); padding:1.75rem 2rem;
-  display:grid; grid-template-columns:auto 1fr auto;
-  gap:1.25rem; align-items:center; margin-bottom:2rem;
+.road-hero{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;display:flex;align-items:center;gap:1.25rem;margin-bottom:1.5rem;}
+.rh-logo{width:52px;height:52px;border-radius:13px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.rh-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--white);}
+.rh-meta{font-size:11px;color:var(--slate);margin-top:2px;}
+.rh-right{margin-left:auto;text-align:center;flex-shrink:0;}
+.rh-pct{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;line-height:1;}
+.rh-lbl{font-size:10px;color:var(--slate);margin-top:2px;}
+
+.xp-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 16px;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px;}
+.xp-label{font-size:13px;font-weight:600;color:var(--pri);flex-shrink:0;}
+.xp-track{flex:1;height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;}
+.xp-fill{height:100%;background:var(--pri);border-radius:4px;transition:width .8s ease;}
+.xp-count{font-size:11px;color:var(--slate-dim);flex-shrink:0;}
+
+.stats-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:2rem;display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:center;}
+.sb-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
+.sb-row:last-child{border-bottom:none;}
+.sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sb-lbl{font-size:12px;color:var(--white);flex:1;}
+.sb-trk{width:72px;height:3px;background:var(--bg4);border-radius:2px;flex-shrink:0;}
+.sb-fill2{height:100%;border-radius:2px;}
+.sb-pct{font-size:10px;color:var(--slate);width:26px;text-align:right;flex-shrink:0;}
+
+.start-banner{background:var(--pri-dim);border:1px solid var(--border-mid);border-radius:var(--radius-lg);padding:.875rem 1.25rem;display:flex;align-items:center;gap:10px;margin-bottom:2rem;}
+.sb-icon{font-size:24px;flex-shrink:0;}
+.sb-txt strong{display:block;font-size:13px;font-weight:600;color:var(--white);margin-bottom:1px;}
+.sb-txt span{font-size:11px;color:var(--slate);}
+
+/* ── Gamified path ── */
+.game-path{position:relative;display:flex;flex-direction:column;align-items:center;}
+.path-segment{display:flex;flex-direction:column;align-items:center;width:100%;}
+
+/* connector line */
+.connector{width:3px;height:36px;border-radius:2px;margin:0 auto;}
+.conn-done{background:var(--green);}
+.conn-active{background:linear-gradient(to bottom,var(--green),var(--pri));}
+.conn-future{background:var(--bg4);}
+
+/* node positioning — zigzag */
+.node-row{display:flex;width:100%;align-items:center;position:relative;}
+.node-row.left {justify-content:flex-start;padding-left:24px;}
+.node-row.right{justify-content:flex-end;padding-right:24px;}
+.node-row.center{justify-content:center;}
+
+/* connector positioned relative to node */
+.connector.left {margin-left:60px;margin-right:auto;}
+.connector.right{margin-right:60px;margin-left:auto;}
+.connector.center{margin:0 auto;}
+
+.gnode{display:flex;flex-direction:column;align-items:center;cursor:pointer;width:80px;}
+.gnode-circle{
+  width:68px;height:68px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;position:relative;
+  transition:transform .18s;border:3px solid transparent;
 }
-.road-uni-logo { width:56px; height:56px; border-radius:14px; background:var(--bg4); display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; }
-.road-uni-name { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:700; color:var(--white); margin-bottom:3px; }
-.road-uni-meta { font-size:12px; color:var(--slate); }
-.road-chance-block { text-align:center; }
-.road-pct { font-family:'Playfair Display',serif; font-size:2.5rem; font-weight:700; line-height:1; }
-.road-pct-label { font-size:11px; color:var(--slate); margin-top:3px; }
+.gnode-circle:hover{transform:scale(1.1);}
+.gnode-circle:active{transform:scale(0.96);}
+.gnode-circle.done   {background:var(--green);border-color:#1a9959;box-shadow:0 4px 14px rgba(45,191,123,0.35);}
+.gnode-circle.current{background:var(--pri);border-color:var(--pri-deep);box-shadow:0 4px 18px rgba(159,172,251,0.45);animation:gpulse 2s infinite;}
+.gnode-circle.urgent {background:var(--red);border-color:#a80d47;box-shadow:0 4px 14px rgba(224,17,95,0.35);}
+.gnode-circle.locked {background:var(--bg4);border-color:var(--bg5);}
+@keyframes gpulse{0%,100%{box-shadow:0 4px 18px rgba(159,172,251,0.45);}50%{box-shadow:0 4px 28px rgba(159,172,251,0.7);}}
 
-/* timeline */
-.timeline-section { margin-bottom:2.5rem; }
-.ts-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
-.ts-title { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; color:var(--white); }
-.ts-date  { font-size:12px; color:var(--slate-dim); background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:4px 10px; }
+.gcheck{position:absolute;bottom:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:#fff;color:var(--green);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--green);}
+.gnode-lbl{font-size:11px;font-weight:600;color:var(--white);margin-top:5px;text-align:center;line-height:1.3;}
+.gnode-sub{font-size:9px;color:var(--slate-dim);text-align:center;margin-top:1px;}
 
-.timeline { position:relative; padding-left:28px; }
-.timeline::before { content:''; position:absolute; left:10px; top:0; bottom:0; width:2px; background:var(--border-mid); border-radius:1px; }
+/* destination */
+.destination{text-align:center;margin-top:8px;padding:2rem 1rem;background:var(--bg2);border:1px solid var(--border-mid);border-radius:var(--radius-lg);position:relative;overflow:hidden;}
+.dest-glow{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(159,172,251,0.1) 0%,transparent 70%);pointer-events:none;}
+.dest-building{font-size:72px;display:block;margin-bottom:10px;filter:drop-shadow(0 6px 20px rgba(159,172,251,0.25));}
+.dest-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--pri-soft);margin-bottom:5px;}
+.dest-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:5px;}
+.dest-sub{font-size:12px;color:var(--slate);}
 
-.tl-item { position:relative; margin-bottom:0; }
-.tl-dot {
-  position:absolute; left:-24px; top:14px;
-  width:12px; height:12px; border-radius:50%;
-  border:2px solid; background:var(--bg);
+/* popup */
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;display:none;}
+.popup-overlay.open{display:block;}
+.node-popup{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--bg2);border-top:1px solid var(--border-mid);
+  border-radius:20px 20px 0 0;
+  padding:1.25rem 1.5rem 2rem;
+  transform:translateY(100%);transition:transform .28s ease;
+  max-width:680px;margin:0 auto;
 }
-.tl-dot.done    { background:var(--green); border-color:var(--green); }
-.tl-dot.current { background:var(--pri);   border-color:var(--pri); box-shadow:0 0 0 3px var(--pri-dim); }
-.tl-dot.future  { background:var(--bg);    border-color:var(--border-mid); }
-.tl-dot.urgent  { background:var(--red);   border-color:var(--red); }
+.node-popup.open{transform:translateY(0);}
+.pop-handle{width:36px;height:3px;background:var(--bg5);border-radius:2px;margin:0 auto 1rem;}
+.pop-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.6rem;}
+.pop-title{font-size:15px;font-weight:600;color:var(--white);}
+.pop-close{background:none;border:none;color:var(--slate);font-size:22px;cursor:pointer;line-height:1;padding:0;}
+.pop-desc{font-size:13px;color:var(--slate);line-height:1.65;margin-bottom:.875rem;}
+.pop-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.ptag{font-size:11px;padding:3px 9px;border-radius:5px;background:var(--bg3);border:1px solid var(--border);color:var(--slate);}
+.ptag.metric-sat  {background:rgba(159,172,251,.1);color:#9FACFB;border-color:rgba(159,172,251,.2);}
+.ptag.metric-gpa  {background:rgba(224,160,32,.1); color:#E0A020;border-color:rgba(224,160,32,.2);}
+.ptag.metric-ielts{background:rgba(45,191,123,.1); color:#2DBF7B;border-color:rgba(45,191,123,.2);}
+.ptag.metric-essay{background:rgba(184,196,255,.1);color:#B8C4FF;border-color:rgba(184,196,255,.2);}
+.ptag.metric-ec   {background:rgba(224,17,95,.1);  color:#E0115F;border-color:rgba(224,17,95,.2);}
+.ptag.deadline    {background:rgba(224,17,95,.1);  color:#F24080;border-color:rgba(224,17,95,.3);font-weight:600;}
 
-.tl-card {
-  background:var(--bg2); border:1px solid var(--border);
-  border-radius:var(--radius); padding:1rem 1.25rem;
-  margin-bottom:10px; transition:border-color .2s;
-}
-.tl-card:hover { border-color:var(--border-mid); }
-.tl-card.current-card { border-color:var(--pri); background:rgba(159,172,251,0.04); }
-.tl-card.urgent-card  { border-color:var(--red); background:rgba(224,17,95,0.04); }
-
-.tl-period  { font-size:11px; font-weight:600; color:var(--slate-dim); text-transform:uppercase; letter-spacing:.06em; margin-bottom:5px; }
-.tl-task    { font-size:14px; font-weight:500; color:var(--white); margin-bottom:4px; }
-.tl-detail  { font-size:12px; color:var(--slate); line-height:1.55; }
-.tl-tags    { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
-.tl-tag     { font-size:10px; padding:3px 8px; border-radius:5px; background:var(--bg3); border:1px solid var(--border); color:var(--slate); }
-.tl-tag.metric-sat   { background:rgba(159,172,251,0.1); border-color:rgba(159,172,251,0.2); color:#9FACFB; }
-.tl-tag.metric-gpa   { background:rgba(224,160,32,0.1);  border-color:rgba(224,160,32,0.2);  color:#E0A020; }
-.tl-tag.metric-ielts { background:rgba(45,191,123,0.1);  border-color:rgba(45,191,123,0.2);  color:#2DBF7B; }
-.tl-tag.metric-essay { background:rgba(184,196,255,0.1); border-color:rgba(184,196,255,0.2); color:#B8C4FF; }
-.tl-tag.metric-ec    { background:rgba(224,17,95,0.1);   border-color:rgba(224,17,95,0.2);   color:#E0115F; }
-.tl-tag.deadline     { background:rgba(224,17,95,0.1);   border-color:rgba(224,17,95,0.3);   color:#F24080; font-weight:600; }
-
-/* metric improvement cards */
-.metrics-section { margin-bottom:2.5rem; }
-.metric-cards { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.mc {
-  background:var(--bg2); border:1px solid var(--border);
-  border-radius:var(--radius); padding:1.25rem;
-}
-.mc-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-.mc-title  { font-size:13px; font-weight:600; color:var(--white); display:flex; align-items:center; gap:6px; }
-.mc-dot    { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.mc-score  { font-size:18px; font-weight:700; font-family:'Playfair Display',serif; }
-.mc-track  { height:4px; background:var(--bg4); border-radius:2px; overflow:hidden; margin-bottom:10px; }
-.mc-fill   { height:100%; border-radius:2px; }
-.mc-status { font-size:11px; margin-bottom:8px; }
-.mc-actions { display:flex; flex-direction:column; gap:5px; }
-.mc-action { font-size:12px; color:var(--slate); padding:6px 10px; background:var(--bg3); border-radius:7px; border:1px solid var(--border); line-height:1.4; }
-.mc-action strong { color:var(--white); display:block; margin-bottom:1px; }
-
-/* deadline countdown */
-.countdown-strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:8px; margin-bottom:2rem; }
-.cd-box { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; text-align:center; }
-.cd-type  { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--pri-soft); margin-bottom:4px; }
-.cd-date  { font-size:14px; font-weight:600; color:var(--white); }
-.cd-days  { font-size:11px; margin-top:3px; }
-.cd-days.urgent { color:var(--red); font-weight:600; }
-.cd-days.soon   { color:var(--amber); }
-.cd-days.ok     { color:var(--green); }
-
-@media(max-width:700px) {
-  .road-hero { grid-template-columns:auto 1fr; }
-  .road-chance-block { grid-column:1/-1; display:flex; align-items:center; gap:12px; }
-  .metric-cards { grid-template-columns:1fr; }
+@media(max-width:580px){
+  .stats-panel{grid-template-columns:1fr;}
+  .sp-radar-wrap{display:none;}
 }
 </style>
 </head>
 <body>
-
 <nav>
   <a href="index.html" class="logo"><span class="logo-dot"></span>UniJourney</a>
-  <ul class="nav-links">
-    <li><a href="dashboard.html">← Dashboard</a></li>
-    <li><a href="results.html">All results</a></li>
-  </ul>
+  <ul class="nav-links"><li><a href="dashboard.html">← Dashboard</a></li></ul>
   <a href="dashboard.html" class="btn btn-ghost btn-sm">← Dashboard</a>
 </nav>
 
-<div class="road-layout" id="roadLayout">
-  <div style="text-align:center;padding:4rem;color:var(--slate);">Building your roadmap...</div>
+<div class="road-wrap">
+  <div id="roadContent"><div style="text-align:center;padding:4rem;color:var(--slate);">Loading...</div></div>
+</div>
+
+<div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
+<div class="node-popup" id="nodePopup">
+  <div class="pop-handle"></div>
+  <div class="pop-hdr">
+    <div class="pop-title" id="popTitle"></div>
+    <button class="pop-close" onclick="closePopup()">×</button>
+  </div>
+  <div class="pop-desc" id="popDesc"></div>
+  <div class="pop-tags" id="popTags"></div>
 </div>
 
 <div id="toast"></div>
 <script src="api.js"></script>
 <script>
-// Current date — roadmap uses 2025-26 application cycle
 const NOW = new Date();
-const CYCLE_YEAR = 2025; // hardcoded to 2025-26 season
+function normYear(iso){if(!iso)return iso;const d=new Date(iso+'T12:00:00');if(d.getFullYear()<2025)return iso.replace(/^\d{4}/,'2025');return iso;}
+function fmt(iso){if(!iso)return'—';return new Date(normYear(iso)+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function daysUntil(iso){if(!iso)return null;return Math.round((new Date(normYear(iso)+'T12:00:00')-NOW)/86400000);}
 
-function daysUntil(isoDate) {
-  if (!isoDate) return null;
-  // Force year to 2025-26 cycle
-  let d = new Date(isoDate + 'T12:00:00');
-  if (d.getFullYear() < 2025) d.setFullYear(2025);
-  return Math.round((d - NOW) / (1000*60*60*24));
-}
+async function init(){
+  const params=new URLSearchParams(window.location.search);
+  const uniId=params.get('id'), slot=params.get('slot')||'dream';
+  const [unis,profile]=await Promise.all([getUniversities(),loadProfile().catch(()=>null)]);
+  const prof=profile||JSON.parse(localStorage.getItem('uj_profile_local')||'{}');
+  const uni=unis.find(u=>String(u.scorecard_id)===uniId||u.id===uniId||String(u.id)===uniId);
+  if(!uni){document.getElementById('roadContent').innerHTML=`<div style="text-align:center;padding:4rem;"><p style="color:var(--slate);margin-bottom:1rem;">University not found.</p><a href="dashboard.html" class="btn btn-primary">← Dashboard</a></div>`;return;}
 
-function fmt(iso) {
-  if (!iso) return '—';
-  let d = new Date(iso + 'T12:00:00');
-  if (d.getFullYear() < 2025) d.setFullYear(2025);
-  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-}
+  document.title=`UniJourney — Roadmap for ${uni.name}`;
+  const{final,scores}=calcChance(uni,prof);
+  const tier=getTier(final);
+  const tierColor=tier==='likely'?'var(--green)':tier==='target'?'var(--amber)':'var(--red)';
+  const slotLabel={dream:'Dream',target_1:'Target',target_2:'Target',safe_1:'Safety',safe_2:'Safety'}[slot]||'School';
 
-async function init() {
-  const params  = new URLSearchParams(window.location.search);
-  const uniId   = params.get('id');
-  const slot    = params.get('slot') || 'dream';
+  const dl=uni.deadlines||{};
+  const edDate=dl.ed?normYear(dl.ed):null, eaDate=dl.ea?normYear(dl.ea):null, rdDate=dl.rd?normYear(dl.rd):null;
+  const daysED=daysUntil(edDate), daysEA=daysUntil(eaDate), daysRD=daysUntil(rdDate);
 
-  const [unis, profile] = await Promise.all([
-    getUniversities(),
-    loadProfile().catch(() => null),
-  ]);
-  const prof = profile || JSON.parse(localStorage.getItem('uj_profile_local') || '{}');
-  const uni  = unis.find(u => String(u.scorecard_id) === uniId || u.id === uniId);
+  const hasSat=!!(prof.sat||prof.act), hasGpa=!!prof.gpa, hasIelts=!!prof.ielts;
+  const hasEssay=(prof.essay||'').length>200, hasDraft=(prof.essay||'').length>50;
+  const actCount=(prof.activities||[]).filter(Boolean).length;
+  const p25=(uni.sat_reading_25||0)+(uni.sat_math_25||0);
+  const p75=(uni.sat_reading_75||0)+(uni.sat_math_75||0);
 
-  if (!uni) {
-    document.getElementById('roadLayout').innerHTML = `<div style="text-align:center;padding:4rem;"><p style="color:var(--slate);">University not found.</p><a href="dashboard.html" class="btn btn-primary">← Dashboard</a></div>`;
-    return;
+  function ns(daysLeft,done){
+    if(done)return'done';
+    if(daysLeft!==null&&daysLeft<0)return'done';
+    if(daysLeft!==null&&daysLeft<21)return'urgent';
+    return'current';
   }
 
-  document.title = `UniJourney — Roadmap for ${uni.name}`;
-  const { final, scores } = calcChance(uni, prof);
-  const tier = getTier(final);
-  const tierColor = tier==='likely'?'var(--green)':tier==='target'?'var(--amber)':'var(--red)';
-  const slotLabel = { dream:'Dream school', target_1:'Target school', target_2:'Target school', safe_1:'Safety school', safe_2:'Safety school' }[slot] || 'School';
+  const nodes=[
+    {emoji:'🧭',label:'Complete profile',sub:'Foundation',status:(hasGpa&&hasSat)?'done':'current',
+     title:'Complete your UniJourney profile',
+     desc:'Add GPA, SAT/ACT, IELTS, activities and essay. This feeds all 5 metric scores in your chance calculator.',
+     tags:[{l:hasGpa?'GPA ✓':'GPA missing',c:'metric-gpa'},{l:hasSat?'SAT ✓':'SAT missing',c:'metric-sat'},{l:hasIelts?'IELTS ✓':'IELTS missing',c:'metric-ielts'}]},
+    {emoji:'📝',label:'SAT / ACT',sub:hasSat?(scores.sat>=70?'✓ Strong':scores.sat>=50?'~ In range':'⚠ Below'):'Not entered',
+     status:hasSat&&scores.sat>=55?'done':hasSat?'current':'current',
+     title:'Lock in your SAT or ACT score',
+     desc:hasSat?(scores.sat>=70?`Your score is above the 75th percentile for ${uni.name.split(' ')[0]}. Strong.`:scores.sat>=55?`Within range. The 75th percentile here is ${p75}. A retake could help.`:`Below the 25th percentile (${p25}). Retaking is strongly recommended.`):`Register at collegeboard.org or act.org. Aim for ${p25}+ for ${uni.name.split(' ')[0]}.`,
+     tags:[{l:'SAT/ACT',c:'metric-sat'},{l:`School: ${p25}–${p75}`,c:''}]},
+    {emoji:'🌐',label:'IELTS',sub:hasIelts?`Score: ${prof.ielts}`:'Not entered',
+     status:hasIelts&&scores.ielts>=60?'done':hasIelts?'current':'current',
+     title:'Secure your English proficiency score',
+     desc:!hasIelts?`This school requires IELTS ${uni.ielts_min}+. Register at ielts.org.`:scores.ielts>=75?`Your IELTS ${prof.ielts} meets the ${uni.ielts_min} minimum. ✓`:`Your IELTS ${prof.ielts} meets the minimum — aiming for ${(uni.ielts_min+0.5).toFixed(1)} would strengthen your application.`,
+     tags:[{l:'IELTS',c:'metric-ielts'},{l:`Min: ${uni.ielts_min}`,c:''}]},
+    {emoji:'🏅',label:'Extracurriculars',sub:actCount>=4?'✓ Strong':actCount>=2?'~ Building':'⚠ Needs work',
+     status:actCount>=3?'done':'current',
+     title:'Build your extracurricular profile',
+     desc:actCount<2?'Add clubs, competitions, volunteering, research, sports. 2–3 deep activities beat 10 shallow ones.':actCount<4?'Add leadership roles or national-level achievements to stand out.': `${actCount} activities on file. Frame each with concrete impact.`,
+     tags:[{l:'Activities',c:'metric-ec'},{l:`${actCount} added`,c:''}]},
+    {emoji:'✍️',label:'Personal statement',sub:hasEssay?'✓ Done':hasDraft?'~ Draft':'⚠ Not started',
+     status:hasEssay?'done':hasDraft?'current':'current',
+     title:'Write your personal statement',
+     desc:hasEssay?'Essay saved. Get feedback and produce a polished final version.':hasDraft?'You have a draft — keep writing. Aim for 600+ words. Paste the full essay in your profile for a quality score.':'Choose a moment that reveals your character. First draft due to yourself by Sep 1.',
+     tags:[{l:'Personal Statement',c:'metric-essay'},{l:'650 words',c:''}]},
+    ...(uni.requirements?.supplement&&uni.requirements.supplement!=='None'?[{
+      emoji:'📄',label:`${uni.name.split(' ')[0]} essay`,sub:'Supplement',status:'current',
+      title:`Write the ${uni.name.split(' ')[0]} supplement`,
+      desc:`Required: ${uni.requirements.supplement}. Research the school deeply. Reference specific programs or professors.`,
+      tags:[{l:'Supplement',c:'metric-essay'},{l:uni.requirements.supplement,c:''}]}]:[]),
+    {emoji:'📬',label:'Recommendations',sub:'Request now',status:'current',
+     title:'Request recommendation letters',
+     desc:`Ask 2 teachers and your counselor now. ${uni.name.split(' ')[0]} requires: ${(uni.requirements||{}).recs||'see school website'}. Give them a brag sheet.`,
+     tags:[{l:'Recs',c:''},{l:(uni.requirements||{}).recs||'See school site',c:''}]},
+    ...(edDate?[{emoji:'🚀',label:'Submit ED',sub:fmt(edDate),
+      status:ns(daysED,false),
+      title:`Submit Early Decision — ${fmt(edDate)}`,
+      desc:`ED is binding. Only apply if ${uni.name} is truly your first choice. ED applicants have a higher admit rate.`,
+      tags:[{l:'ED Binding',c:'deadline'},{l:daysED!=null?(daysED<0?'Passed':daysED+' days'):' ',c:'deadline'}]}]:[]),
+    ...(eaDate&&!edDate?[{emoji:'⚡',label:'Submit EA',sub:fmt(eaDate),
+      status:ns(daysEA,false),
+      title:`Submit Early Action — ${fmt(eaDate)}`,
+      desc:`Non-binding. Hear back in December. Applying EA often significantly improves your chances.`,
+      tags:[{l:'EA Non-binding',c:'metric-sat'},{l:daysEA!=null?(daysEA<0?'Passed':daysEA+' days'):' ',c:'deadline'}]}]:[]),
+    ...(rdDate?[{emoji:'📮',label:'Submit RD',sub:fmt(rdDate),
+      status:ns(daysRD,false),
+      title:`Regular Decision — ${fmt(rdDate)}`,
+      desc:`Submit complete application with all materials. Check your Common App dashboard the day before.`,
+      tags:[{l:'Regular Decision',c:''},{l:daysRD!=null?(daysRD<0?'Passed':daysRD+' days'):' ',c:'deadline'}]}]:[]),
+    {emoji:'🎯',label:'Decision day',sub:'Apr 2026',status:'locked',
+     title:'Receive your decision',
+     desc:'ED: December. EA/RD: March–April 2026. Compare financial aid packages. Commit by May 1.',
+     tags:[{l:'Decision period',c:''},{l:'Commit by May 1',c:''}]},
+  ];
 
-  const dl = uni.deadlines || {};
-  // Normalize dates to 2025-26 cycle
-  const edDate  = dl.ed  ? normYear(dl.ed)  : null;
-  const eaDate  = dl.ea  ? normYear(dl.ea)  : null;
-  const rdDate  = dl.rd  ? normYear(dl.rd)  : null;
-  const ed2Date = dl.ed2 ? normYear(dl.ed2) : null;
+  window._nodes=nodes;
+  const doneCount=nodes.filter(n=>n.status==='done').length;
+  const xp=doneCount*100;
+  const positions=['center','right','left','right','left','right','left','center','right','left','center'];
 
-  // Days until each deadline
-  const daysED = edDate  ? daysUntil(edDate)  : null;
-  const daysEA = eaDate  ? daysUntil(eaDate)  : null;
-  const daysRD = rdDate  ? daysUntil(rdDate)  : null;
-
-  const p25sat = (uni.sat_reading_25||0)+(uni.sat_math_25||0);
-  const p75sat = (uni.sat_reading_75||0)+(uni.sat_math_75||0);
-  const userSat = prof.sat || (prof.act ? prof.act*44+790 : 0);
-
-  document.getElementById('roadLayout').innerHTML = `
-    <!-- Hero -->
-    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--slate);font-size:13px;margin-bottom:1.25rem;">← Back to dashboard</a>
-    <div class="road-hero">
-      <div class="road-uni-logo">${uni.emoji||'🎓'}</div>
-      <div>
-        <div class="road-uni-name">${uni.name}</div>
-        <div class="road-uni-meta">${slotLabel} · ${uni.city||''}, ${uni.state||''} · ${Math.round((uni.acceptance_rate||0)*100)}% admit rate</div>
-        <div style="margin-top:8px;"><span class="badge-${tier}">${tier}</span></div>
+  // Build path HTML
+  const pathHTML=nodes.map((node,i)=>{
+    const pos=positions[i%positions.length];
+    const prevDone=i>0&&nodes[i-1].status==='done';
+    const connCls=node.status==='done'?'conn-done':prevDone?'conn-active':'conn-future';
+    return`${i>0?`<div class="connector ${connCls} ${pos}"></div>`:''}
+    <div class="node-row ${pos}">
+      <div class="gnode" onclick="openPopup(${i})">
+        <div class="gnode-circle ${node.status}">
+          ${node.emoji}
+          ${node.status==='done'?'<div class="gcheck">✓</div>':''}
+        </div>
+        <div class="gnode-lbl">${node.label}</div>
+        <div class="gnode-sub">${node.sub}</div>
       </div>
-      <div class="road-chance-block">
-        <div class="road-pct" style="color:${tierColor};">${final}%</div>
-        <div class="road-pct-label">current chance</div>
-      </div>
-    </div>
-
-    <!-- Deadline countdown -->
-    <div class="countdown-strip" id="countdownStrip"></div>
-
-    <!-- Metric improvement -->
-    <div class="metrics-section">
-      <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:1rem;">
-        Improve your <em>5 metrics</em>
-      </h2>
-      <div class="metric-cards" id="metricCards"></div>
-    </div>
-
-    <!-- Full timeline -->
-    <div class="timeline-section">
-      <div class="ts-header">
-        <div class="ts-title">Your application roadmap</div>
-        <div class="ts-date">2025–26 cycle</div>
-      </div>
-      <div class="timeline" id="roadTimeline"></div>
-    </div>
-  `;
-
-  // Countdown
-  const countdowns = [];
-  if (edDate && daysED !== null)   countdowns.push({ type:'ED',  date:fmt(edDate),  days:daysED  });
-  if (eaDate && daysEA !== null)   countdowns.push({ type:'EA',  date:fmt(eaDate),  days:daysEA  });
-  if (rdDate && daysRD !== null)   countdowns.push({ type:'RD',  date:fmt(rdDate),  days:daysRD  });
-  if (ed2Date)                     countdowns.push({ type:'ED2', date:fmt(ed2Date), days:daysUntil(ed2Date) });
-
-  document.getElementById('countdownStrip').innerHTML = countdowns.map(c => {
-    const cls = c.days < 30 ? 'urgent' : c.days < 90 ? 'soon' : 'ok';
-    const label = c.days < 0 ? 'Passed' : c.days === 0 ? 'Today!' : `${c.days} days away`;
-    return `<div class="cd-box">
-      <div class="cd-type">${c.type} Deadline</div>
-      <div class="cd-date">${c.date}</div>
-      <div class="cd-days ${cls}">${label}</div>
     </div>`;
   }).join('');
 
-  // Metric cards
-  const metrics = [
-    {
-      key:'sat', label:'SAT / ACT', color:'#9FACFB',
-      score: scores.sat,
-      status: userSat >= p75sat ? '✓ Above 75th percentile' : userSat >= p25sat ? '~ Between 25th–75th percentile' : '✗ Below 25th percentile',
-      statusColor: userSat >= p75sat ? 'var(--green)' : userSat >= p25sat ? 'var(--amber)' : 'var(--red)',
-      actions: buildSatActions(userSat, p25sat, p75sat, prof),
-    },
-    {
-      key:'gpa', label:'GPA', color:'#E0A020',
-      score: scores.gpa,
-      status: (prof.gpa||0) >= (uni.gpa_avg||0) ? `✓ Above school average (${uni.gpa_avg})` : `✗ Below average (${uni.gpa_avg})`,
-      statusColor: (prof.gpa||0) >= (uni.gpa_avg||0) ? 'var(--green)' : 'var(--red)',
-      actions: buildGpaActions(prof.gpa, uni.gpa_avg),
-    },
-    {
-      key:'ielts', label:'IELTS', color:'#2DBF7B',
-      score: scores.ielts,
-      status: !prof.ielts ? '— Not entered yet' : (prof.ielts||0) >= (uni.ielts_min||0) ? `✓ Meets minimum (${uni.ielts_min})` : `✗ Below minimum (${uni.ielts_min})`,
-      statusColor: !prof.ielts ? 'var(--slate)' : (prof.ielts||0) >= (uni.ielts_min||0) ? 'var(--green)' : 'var(--red)',
-      actions: buildIeltsActions(prof.ielts, uni.ielts_min),
-    },
-    {
-      key:'essay', label:'Personal Statement', color:'#B8C4FF',
-      score: scores.essay,
-      status: (prof.essay||'').length > 300 ? '✓ Essay submitted' : (prof.essay||'').length > 0 ? '~ Draft in progress' : '✗ Not started',
-      statusColor: (prof.essay||'').length > 300 ? 'var(--green)' : 'var(--amber)',
-      actions: buildEssayActions(prof.essay, uni),
-    },
-    {
-      key:'ec', label:'Extracurriculars', color:'#E0115F',
-      score: scores.ec,
-      status: (prof.activities||[]).filter(Boolean).length >= 4 ? '✓ Strong profile' : (prof.activities||[]).filter(Boolean).length >= 2 ? '~ Developing profile' : '✗ Needs more activities',
-      statusColor: (prof.activities||[]).filter(Boolean).length >= 4 ? 'var(--green)' : 'var(--amber)',
-      actions: buildEcActions(prof.activities, uni),
-    },
+  document.getElementById('roadContent').innerHTML=`
+    <div style="padding-top:1.5rem;"></div>
+    <a href="dashboard.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--slate);font-size:13px;margin-bottom:1.25rem;">← Dashboard</a>
+    <div class="road-hero">
+      <div class="rh-logo">${uni.emoji||'🎓'}</div>
+      <div>
+        <div class="rh-name">${uni.name}</div>
+        <div class="rh-meta">${slotLabel} · ${uni.city||''}, ${uni.state||''} · ${Math.round((uni.acceptance_rate||0)*100)}% admit</div>
+        <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
+          <span class="badge-${tier}">${tier}</span>
+          <span style="font-size:11px;color:var(--slate-dim);">${doneCount}/${nodes.length} done</span>
+        </div>
+      </div>
+      <div class="rh-right">
+        <div class="rh-pct" style="color:${tierColor};">${final}%</div>
+        <div class="rh-lbl">your chance</div>
+      </div>
+    </div>
+    <div class="xp-bar">
+      <div class="xp-label">⚡ ${xp} XP</div>
+      <div class="xp-track"><div class="xp-fill" style="width:${Math.round(doneCount/nodes.length*100)}%;"></div></div>
+      <div class="xp-count">${doneCount}/${nodes.length}</div>
+    </div>
+    <div class="stats-panel">
+      <div class="sp-radar-wrap" id="radarWrap"></div>
+      <div id="scoreBars"></div>
+    </div>
+    <div class="start-banner">
+      <div class="sb-icon">🏁</div>
+      <div class="sb-txt">
+        <strong>Start your journey here</strong>
+        <span>Tap each milestone to see what to do. Complete them to increase your ${final}% chance.</span>
+      </div>
+    </div>
+    <div class="game-path">${pathHTML}</div>
+    <div class="connector conn-active center"></div>
+    <div class="destination">
+      <div class="dest-glow"></div>
+      <span class="dest-building">🏛️</span>
+      <div class="dest-label">Your destination</div>
+      <div class="dest-name">${uni.name}</div>
+      <div class="dest-sub">Complete all milestones to maximise your ${final}% chance</div>
+    </div>`;
+
+  document.getElementById('radarWrap').innerHTML=buildRadar(scores,tier,220);
+  const barData=[
+    {l:'SAT/ACT',s:scores.sat,c:'#9FACFB'},{l:'GPA',s:scores.gpa,c:'#E0A020'},
+    {l:'IELTS',s:scores.ielts,c:'#2DBF7B'},{l:'Essay',s:scores.essay,c:'#B8C4FF'},
+    {l:'ECs',s:scores.ec,c:'#E0115F'},
   ];
-
-  document.getElementById('metricCards').innerHTML = metrics.map(m => `
-    <div class="mc">
-      <div class="mc-header">
-        <div class="mc-title"><div class="mc-dot" style="background:${m.color};"></div>${m.label}</div>
-        <div class="mc-score" style="color:${m.color};">${Math.round(m.score)}%</div>
-      </div>
-      <div class="mc-track"><div class="mc-fill" style="width:${Math.round(m.score)}%;background:${m.color};"></div></div>
-      <div class="mc-status" style="color:${m.statusColor};">${m.status}</div>
-      <div class="mc-actions">
-        ${m.actions.map(a => `<div class="mc-action"><strong>${a.title}</strong>${a.detail}</div>`).join('')}
-      </div>
-    </div>`).join('');
-
-  // Full timeline
-  const tlItems = buildTimeline(uni, prof, scores, edDate, eaDate, rdDate, ed2Date);
-  document.getElementById('roadTimeline').innerHTML = tlItems.map(item => `
-    <div class="tl-item">
-      <div class="tl-dot ${item.status}"></div>
-      <div class="tl-card ${item.status === 'current' ? 'current-card' : item.status === 'urgent' ? 'urgent-card' : ''}">
-        <div class="tl-period">${item.period}</div>
-        <div class="tl-task">${item.task}</div>
-        <div class="tl-detail">${item.detail}</div>
-        ${item.tags ? `<div class="tl-tags">${item.tags.map(t => `<span class="tl-tag ${t.cls||''}">${t.label}</span>`).join('')}</div>` : ''}
-      </div>
+  document.getElementById('scoreBars').innerHTML=barData.map(b=>`
+    <div class="sb-row">
+      <div class="sb-dot" style="background:${b.c};"></div>
+      <div class="sb-lbl">${b.l}</div>
+      <div class="sb-trk"><div class="sb-fill2" style="width:${Math.round(b.s)}%;background:${b.c};"></div></div>
+      <div class="sb-pct">${Math.round(b.s)}%</div>
     </div>`).join('');
 }
 
-function normYear(iso) {
-  if (!iso) return iso;
-  const d = new Date(iso + 'T12:00:00');
-  if (d.getFullYear() < 2025) {
-    return iso.replace(/^\d{4}/, '2025');
-  }
-  return iso;
+function openPopup(idx){
+  const n=window._nodes[idx];if(!n)return;
+  document.getElementById('popTitle').textContent=n.title;
+  document.getElementById('popDesc').textContent=n.desc;
+  document.getElementById('popTags').innerHTML=(n.tags||[]).map(t=>`<span class="ptag ${t.c||''}">${t.l}</span>`).join('');
+  document.getElementById('nodePopup').classList.add('open');
+  document.getElementById('popupOverlay').classList.add('open');
 }
-
-// ── Action builders per metric ─────────────────────────────
-function buildSatActions(userSat, p25, p75, prof) {
-  if (!userSat) return [
-    { title:'Take the SAT', detail:'Register for Oct or Nov 2025 test date at collegeboard.org. Score of '+p25+'+ puts you in range.' },
-    { title:'Start Khan Academy SAT prep', detail:'Free, personalized SAT practice at khanacademy.org/sat. Aim for 8 weeks of daily practice.' },
-  ];
-  if (userSat >= p75) return [
-    { title:'Score is strong ✓', detail:'Your '+userSat+' is above the 75th percentile ('+p75+'). No retake needed. Focus on essays.' },
-  ];
-  if (userSat >= p25) return [
-    { title:'Consider retaking', detail:'Your '+userSat+' is in range but below the median. Scoring '+p75+' or higher would strengthen your application.' },
-    { title:'Target score: '+Math.min(p75, userSat+100), detail:'Use College Board practice tests. Focus on your weakest section (Math vs Reading/Writing).' },
-  ];
-  return [
-    { title:'Retake strongly recommended', detail:'Your '+userSat+' is below the 25th percentile ('+p25+'). Aim for at least '+p25+' to be competitive.' },
-    { title:'Intensive prep needed', detail:'Dedicate 2–3 hours/day for 8 weeks. Use College Board official practice tests + Khan Academy.' },
-  ];
+function closePopup(){
+  document.getElementById('nodePopup').classList.remove('open');
+  document.getElementById('popupOverlay').classList.remove('open');
 }
-
-function buildGpaActions(gpa, avgGpa) {
-  if (!gpa) return [{ title:'Enter your GPA', detail:'Add your GPA to your profile to get accurate calculations.' }];
-  if ((gpa||0) >= (avgGpa||0)) return [
-    { title:'GPA is competitive ✓', detail:'Your '+gpa+' GPA is above the school average. Maintain it and focus on other metrics.' },
-  ];
-  const diff = ((avgGpa||0) - (gpa||0)).toFixed(1);
-  return [
-    { title:'GPA gap: '+diff+' points', detail:'You can\'t change past grades, but a strong upward trend in 11th–12th grade is viewed positively.' },
-    { title:'Compensate with strong ECs and essays', detail:'Top programs evaluate your whole profile. A weaker GPA can be offset by exceptional accomplishments.' },
-    { title:'Highlight grade trajectory', detail:'If your GPA has improved over time, note this in your application. A rising trend is a positive signal.' },
-  ];
-}
-
-function buildIeltsActions(ielts, minIelts) {
-  if (!ielts) return [
-    { title:'Register for IELTS', detail:'Book at ielts.org. Most schools accept scores from the last 2 years. Aim for '+minIelts+' or higher.' },
-    { title:'Prep resources', detail:'British Council free materials, Cambridge IELTS books (1–17). Practice all 4 components equally.' },
-  ];
-  if ((ielts||0) >= (minIelts||0)) return [
-    { title:'IELTS meets requirement ✓', detail:'Your '+ielts+' meets the minimum of '+minIelts+'. If possible, aiming for 7.5+ strengthens your application.' },
-  ];
-  return [
-    { title:'Retake IELTS — below minimum', detail:'Your '+ielts+' is below the required '+minIelts+'. You must meet this threshold to be eligible.' },
-    { title:'Target score: '+(minIelts+0.5), detail:'Focus on your weakest section. Speaking and Writing are most improvable with practice.' },
-  ];
-}
-
-function buildEssayActions(essay, uni) {
-  const len = (essay||'').trim().split(/\s+/).filter(Boolean).length;
-  if (len < 50) return [
-    { title:'Start your personal statement', detail:'The Common App essay is 650 words. Choose a prompt that lets you tell a unique, personal story.' },
-    { title:'Brainstorm topics this week', detail:'List 5 experiences that shaped you. Pick the one that reveals character, not just achievements.' },
-  ];
-  if (len < 300) return [
-    { title:'Complete your draft', detail:'You have a start — keep writing. First drafts don\'t need to be perfect. Aim for 600+ words before editing.' },
-    { title:'Visit your profile to paste full essay', detail:'Add your full draft to your UniJourney profile for a quality score.' },
-  ];
-  return [
-    { title:'Get feedback on your essay', detail:'Share with a trusted teacher or counselor. Focus on: does it sound like you? Is it specific?' },
-    { title:'Write '+uni.name.split(' ')[0]+' supplement', detail: (uni.requirements||{}).supplement ? 'This school requires: '+(uni.requirements.supplement)+'. Research the school deeply before writing.' : 'Check the Common App for any school-specific supplements.' },
-  ];
-}
-
-function buildEcActions(activities, uni) {
-  const count = (activities||[]).filter(Boolean).length;
-  if (count < 2) return [
-    { title:'Add more activities to your profile', detail:'List all clubs, sports, jobs, volunteering, or personal projects. Even informal activities count.' },
-    { title:'Quality over quantity', detail:'Depth in 2–3 activities beats participation in 10. Show leadership, impact, and commitment.' },
-  ];
-  if (count < 4) return [
-    { title:'Strengthen existing activities', detail:'Take on leadership roles. Start a project. Compete nationally. Depth matters more than breadth.' },
-    { title:'Highlight your strongest activity', detail:'Your most impressive activity should be #1 on your Common App list. Describe impact quantitatively.' },
-  ];
-  return [
-    { title:'Strong activity profile ✓', detail:'You have solid extracurriculars. Focus on framing them well in the Common App activities section.' },
-    { title:'Describe impact, not just participation', detail:'Instead of "Member of Debate Club", write "Coached 6 freshman debaters; team won regional championship."' },
-  ];
-}
-
-// ── Timeline builder ───────────────────────────────────────
-function buildTimeline(uni, prof, scores, edDate, eaDate, rdDate, ed2Date) {
-  const items = [];
-  const add = (period, task, detail, status, tags) => items.push({period,task,detail,status,tags});
-
-  // Determine what's already done vs upcoming
-  const hasGpa   = !!(prof.gpa);
-  const hasSat   = !!(prof.sat || prof.act);
-  const hasIelts = !!(prof.ielts);
-  const hasEssay = (prof.essay||'').length > 200;
-  const hasDraft = (prof.essay||'').length > 50;
-  const actCount = (prof.activities||[]).filter(Boolean).length;
-
-  add('Immediate — this week', 'Complete your UniJourney profile',
-    'Add GPA, SAT/ACT, IELTS, activities, and essay draft so your chance calculations are accurate.',
-    (hasGpa && hasSat) ? 'done' : 'current',
-    [{label:'All 5 metrics',cls:''},{label:hasGpa?'GPA ✓':'GPA missing',cls:'metric-gpa'},{label:hasSat?'SAT ✓':'SAT missing',cls:'metric-sat'}]);
-
-  add('Now — August 2025', 'Finalize SAT/ACT score',
-    hasSat ? `Your score of ${prof.sat||'ACT '+prof.act} is on file. ${scores.sat < 55 ? 'Consider retaking — you are below the school\'s 25th percentile.' : 'Score looks competitive for this school.'}` :
-    'Register for the October 2025 SAT. This is the last sitting before most ED/EA deadlines.',
-    hasSat && scores.sat >= 55 ? 'done' : hasSat ? 'current' : 'urgent',
-    [{label:'SAT/ACT',cls:'metric-sat'},{label:'Deadline: Oct SAT registration',cls:'deadline'}]);
-
-  if (!hasIelts) {
-    add('August–September 2025', 'Take IELTS / secure English proficiency',
-      `This school requires IELTS ${uni.ielts_min}+. Book a test at ielts.org and allow 2–3 weeks for results.`,
-      'urgent',
-      [{label:'IELTS',cls:'metric-ielts'},{label:'Required: '+uni.ielts_min+'+',cls:'deadline'}]);
-  } else if (scores.ielts < 50) {
-    add('As soon as possible', 'Retake IELTS — below minimum',
-      `Your ${prof.ielts} is below the required ${uni.ielts_min}. You must meet this to be eligible. Book immediately.`,
-      'urgent',
-      [{label:'IELTS',cls:'metric-ielts'},{label:'URGENT',cls:'deadline'}]);
-  }
-
-  add('July–September 2025', 'Draft Common App personal statement',
-    hasEssay ? 'Essay draft complete. Get feedback from a teacher and write your final version.' :
-    hasDraft ? 'You have a draft — keep refining. Aim for 600–650 words. Get a trusted reader to review.' :
-    'Start brainstorming essay topics. Choose an experience that reveals your character, not just your achievements. First draft due to yourself by Sept 1.',
-    hasEssay ? 'done' : hasDraft ? 'current' : 'future',
-    [{label:'Personal Statement',cls:'metric-essay'},{label:'650 words',cls:''}]);
-
-  add('September 2025', 'Request recommendation letters',
-    'Ask 2 teachers and 1 counselor now — they need time to write strong letters. Provide them with your brag sheet: activities, achievements, and why you are applying to these schools.',
-    'future',
-    [{label:'Recommendations',cls:''},{label:'Request 3 letters',cls:''}]);
-
-  if ((uni.requirements||{}).supplement && (uni.requirements.supplement !== 'None' && uni.requirements.supplement !== 'none')) {
-    add('October 2025', `Write ${uni.name.split(' ')[0]} supplement essay`,
-      `This school requires: ${uni.requirements.supplement}. Research the school deeply — professors, programs, campus culture. Be specific, not generic.`,
-      'future',
-      [{label:'Supplement',cls:'metric-essay'},{label:uni.requirements.supplement,cls:''}]);
-  }
-
-  if (edDate) {
-    const days = daysUntil(edDate);
-    add(`ED Deadline — ${fmt(edDate)}`, `Submit Early Decision application to ${uni.name}`,
-      `ED is binding — only apply if this is truly your first choice and you have reviewed the financial aid implications. Your application should be complete and reviewed before this date.`,
-      days < 0 ? 'done' : days < 30 ? 'urgent' : 'future',
-      [{label:'ED — Binding',cls:'deadline'},{label:days < 0 ? 'Passed' : days+' days',cls:'deadline'}]);
-  }
-
-  if (eaDate && !edDate) {
-    const days = daysUntil(eaDate);
-    add(`EA Deadline — ${fmt(eaDate)}`, `Submit Early Action application to ${uni.name}`,
-      'Early Action is non-binding — you hear back early but are not committed. Highly recommended for competitive applicants.',
-      days < 0 ? 'done' : days < 30 ? 'urgent' : 'future',
-      [{label:'EA — Non-binding',cls:'metric-sat'},{label:days < 0 ? 'Passed' : days+' days',cls:'deadline'}]);
-  }
-
-  if (rdDate) {
-    const days = daysUntil(rdDate);
-    add(`RD Deadline — ${fmt(rdDate)}`, 'Regular Decision application deadline',
-      'Submit your complete application with all materials: essay, supplements, test scores, and recommendations confirmed.',
-      days < 0 ? 'done' : days < 30 ? 'urgent' : 'future',
-      [{label:'Regular Decision',cls:''},{label:days < 0 ? 'Passed' : days+' days',cls:'deadline'}]);
-  }
-
-  add('December 2025 – April 2026', 'Receive decision and compare offers',
-    'ED decisions arrive in December. EA and RD in March–April. Compare financial aid packages carefully before committing. You have until May 1 to accept.',
-    'future',
-    [{label:'Decision period',cls:''},{label:'Commit by May 1',cls:''}]);
-
-  return items;
-}
-
 init();
 </script>
 </body>
