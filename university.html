@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UniJourney — University Detail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.uni-layout {
+  max-width: 1100px; margin: 0 auto;
+  padding: 2.5rem clamp(1.5rem, 5vw, 3rem) 4rem;
+}
+
+/* ── Hero ──────────────────────── */
+.uni-hero {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 2rem;
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 1.5rem; align-items: start; margin-bottom: 2rem;
+}
+.uni-logo {
+  width: 72px; height: 72px; border-radius: 18px;
+  background: var(--bg4); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 36px; flex-shrink: 0;
+}
+.uni-hero-mid h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem; font-weight: 700; color: var(--white);
+  margin-bottom: 4px;
+}
+.uni-hero-mid p { font-size: 14px; color: var(--slate); margin-bottom: 12px; }
+.uni-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.uni-tag {
+  font-size: 11px; padding: 4px 10px; border-radius: 6px;
+  background: var(--bg3); border: 1px solid var(--border); color: var(--slate);
+}
+.uni-hero-right { text-align: center; flex-shrink: 0; }
+.big-chance {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.5rem; font-weight: 700; line-height: 1;
+}
+.big-chance-label { font-size: 12px; color: var(--slate); margin-top: 4px; }
+.big-tier { font-size: 13px; font-weight: 600; margin-top: 8px; }
+
+/* ── Stats strip ────────────────── */
+.stats-strip {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 10px; margin-bottom: 2rem;
+}
+.stat-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1rem;
+  text-align: center;
+}
+.stat-card .val { font-size: 1.3rem; font-weight: 600; color: var(--white); }
+.stat-card .lbl { font-size: 11px; color: var(--slate-dim); margin-top: 3px; }
+.stat-card .yours { font-size: 11px; margin-top: 4px; }
+
+/* ── Two-column layout ───────────── */
+.detail-grid {
+  display: grid; grid-template-columns: 1fr 360px;
+  gap: 2rem; align-items: start;
+}
+
+/* ── Tabs ────────────────────────── */
+.tab-bar {
+  display: flex; border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+.tab-btn {
+  padding: 10px 20px; font-size: 13px; font-weight: 500;
+  color: var(--slate); cursor: pointer; border: none;
+  background: transparent; border-bottom: 2px solid transparent;
+  transition: all .18s; font-family: 'DM Sans', sans-serif;
+}
+.tab-btn:hover { color: var(--white); }
+.tab-btn.active { color: var(--pri); border-bottom-color: var(--pri); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Radar card ─────────────────── */
+.radar-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.5rem;
+  position: sticky; top: 80px;
+}
+.radar-title { font-size: 13px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+.radar-sub   { font-size: 12px; color: var(--slate); margin-bottom: 1rem; }
+.radar-center { display: flex; justify-content: center; margin-bottom: 1.25rem; }
+
+/* Score bars */
+.score-bar-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.score-bar-row:last-child { border-bottom: none; }
+.sb-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.sb-label { font-size: 12px; color: var(--white); flex: 1; }
+.sb-track { width: 100px; height: 3px; background: var(--bg4); border-radius: 2px; flex-shrink: 0; }
+.sb-fill  { height: 100%; border-radius: 2px; }
+.sb-pct   { font-size: 11px; color: var(--slate); min-width: 30px; text-align: right; }
+
+/* Requirements */
+.req-table { width: 100%; border-collapse: collapse; }
+.req-table tr { border-bottom: 1px solid var(--border); }
+.req-table tr:last-child { border-bottom: none; }
+.req-table td { padding: 10px 0; font-size: 13px; }
+.req-table .r-label { color: var(--slate); width: 180px; }
+.req-table .r-val   { color: var(--white); font-weight: 500; }
+.compare-row { display: flex; align-items: center; gap: 8px; }
+.comp-badge { font-size: 11px; padding: 2px 7px; border-radius: 4px; }
+.comp-ok  { background: var(--green-dim); color: var(--green); }
+.comp-mid { background: var(--amber-dim); color: var(--amber); }
+.comp-low { background: var(--red-dim);   color: var(--red); }
+
+/* Deadlines */
+.deadline-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.dl-type  { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--pri-soft); }
+.dl-name  { font-size: 13px; color: var(--white); margin-top: 2px; }
+.dl-date  { font-size: 15px; font-weight: 600; color: var(--white); text-align: right; }
+.dl-note  { font-size: 11px; color: var(--slate); margin-top: 2px; }
+
+/* Timeline */
+.timeline { border-left: 2px solid var(--border-mid); margin-left: 10px; padding-left: 20px; }
+.tl-item  { position: relative; padding-bottom: 20px; }
+.tl-item::before {
+  content: ''; position: absolute; left: -26px; top: 4px;
+  width: 10px; height: 10px; border-radius: 50%; border: 2px solid;
+}
+.tl-done::before   { background: var(--green); border-color: var(--green); }
+.tl-current::before{ background: var(--pri);   border-color: var(--pri); }
+.tl-future::before { background: var(--bg);    border-color: var(--border-mid); }
+.tl-period { font-size: 12px; font-weight: 600; color: var(--white); margin-bottom: 3px; }
+.tl-desc   { font-size: 12px; color: var(--slate); line-height: 1.55; }
+
+.section-heading {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .09em; color: var(--slate-dim);
+  margin: 1.5rem 0 .75rem;
+}
+
+@media (max-width: 900px) {
+  .detail-grid { grid-template-columns: 1fr; }
+  .radar-card  { position: static; }
+  .uni-hero    { grid-template-columns: auto 1fr; }
+  .uni-hero-right { grid-column: 1 / -1; text-align: left; display: flex; align-items: center; gap: 1rem; }
+  .stats-strip { grid-template-columns: repeat(3,1fr); }
+}
+@media (max-width: 600px) {
+  .stats-strip { grid-template-columns: 1fr 1fr; }
+  .uni-hero { grid-template-columns: 1fr; }
+  .uni-logo { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo"><span class="logo-dot"></span>UniJourney</a>
+  <ul class="nav-links">
+    <li><a href="results.html">← My list</a></li>
+    <li><a href="profile.html">Edit profile</a></li>
+  </ul>
+  <a href="results.html" class="btn btn-ghost btn-sm">← Back to list</a>
+</nav>
+
+<div class="uni-layout" id="uniLayout">
+  <div style="text-align:center;padding:4rem;color:var(--slate);">Loading university data...</div>
+</div>
+
+<div id="toast"></div>
+
+<script src="api.js"></script>
+<script>
+async function init() {
+  const params = new URLSearchParams(window.location.search);
+  const uniId  = params.get('id');
+
+  const [unis, profile] = await Promise.all([
+    getUniversities(),
+    loadProfile().catch(() => null)
+  ]);
+
+  const prof = profile || JSON.parse(localStorage.getItem('uj_profile_local') || '{}');
+  const uni  = unis.find(u => u.id === uniId);
+
+  if (!uni) {
+    document.getElementById('uniLayout').innerHTML = `
+      <div style="text-align:center;padding:4rem;">
+        <h2 style="font-family:'Playfair Display',serif;color:var(--white);margin-bottom:1rem;">University not found</h2>
+        <a href="results.html" class="btn btn-primary">← Back to list</a>
+      </div>`;
+    return;
+  }
+
+  document.title = `UniJourney — ${uni.name}`;
+  const { final, scores } = calcChance(uni, prof);
+  const tier = getTier(final);
+  const tierColor = tier==='likely'?'var(--green)':tier==='target'?'var(--amber)':'var(--red)';
+  const p25sat = (uni.sat_reading_25||0)+(uni.sat_math_25||0);
+  const p75sat = (uni.sat_reading_75||0)+(uni.sat_math_75||0);
+
+  // Compare helpers
+  const userSat  = prof.sat || (prof.act ? prof.act*44+790 : 0);
+  const satCmp   = userSat >= p75sat ? 'ok' : userSat >= p25sat ? 'mid' : 'low';
+  const gpaCmp   = (prof.gpa||0) >= (uni.gpa_avg||0) ? 'ok' : (prof.gpa||0) >= (uni.gpa_avg||0)-0.3 ? 'mid' : 'low';
+  const ieltsCmp = !prof.ielts ? 'mid' : (prof.ielts||0) >= (uni.ielts_min||0) ? 'ok' : 'low';
+  const cmpLabel = {ok:'✓ Above',mid:'~ Near',low:'✗ Below'};
+
+  // Deadlines
+  const dl = uni.deadlines || {};
+  const dlItems = [];
+  if (dl.ed)  dlItems.push({type:'ED',  name:'Early Decision (binding)',    date:dl.ed,  note:'Binding commitment'});
+  if (dl.ed2) dlItems.push({type:'ED2', name:'Early Decision II',           date:dl.ed2, note:'Binding commitment'});
+  if (dl.ea)  dlItems.push({type:'EA',  name:'Early Action (non-binding)',  date:dl.ea,  note:'Hear back by Dec/Jan'});
+  if (dl.rd)  dlItems.push({type:'RD',  name:'Regular Decision',            date:dl.rd,  note:'Decision by April 1'});
+
+  const fmt = iso => {
+    if (!iso) return '—';
+    const d = new Date(iso+'T12:00:00');
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  };
+
+  document.getElementById('uniLayout').innerHTML = `
+    <!-- Back -->
+    <a href="results.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--slate);font-size:13px;margin-bottom:1.25rem;">
+      ← Back to my list
+    </a>
+
+    <!-- Hero -->
+    <div class="uni-hero">
+      <div class="uni-logo">${uni.emoji||'🎓'}</div>
+      <div class="uni-hero-mid">
+        <h1>${uni.name}</h1>
+        <p>${uni.city}, ${uni.state} · ${uni.type} · Est. tuition: $${Math.round((uni.tuition||55000)/1000)}k/yr</p>
+        <div class="uni-tags">
+          <span class="uni-tag">${Math.round(uni.acceptance_rate*100)}% admit rate</span>
+          <span class="uni-tag">SAT ${p25sat}–${p75sat}</span>
+          <span class="uni-tag">GPA ${uni.gpa_avg}</span>
+          <span class="uni-tag">IELTS ${uni.ielts_min}+</span>
+        </div>
+      </div>
+      <div class="uni-hero-right">
+        <div class="big-chance" style="color:${tierColor};">${final}%</div>
+        <div class="big-chance-label">your admission chance</div>
+        <div class="big-tier badge-${tier}" style="display:inline-block;margin-top:8px;">${tier}</div>
+        <div style="margin-top:12px;">
+          <button class="btn btn-primary btn-sm" onclick="saveThisSchool()">Save school</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="stats-strip">
+      <div class="stat-card"><div class="val">${Math.round(uni.acceptance_rate*100)}%</div><div class="lbl">Acceptance rate</div></div>
+      <div class="stat-card"><div class="val">${p25sat}–${p75sat}</div><div class="lbl">SAT mid 50%</div>
+        <div class="yours ${satCmp}">${userSat ? userSat+' (yours)' : 'Not entered'}</div></div>
+      <div class="stat-card"><div class="val">${uni.gpa_avg}</div><div class="lbl">Avg GPA</div>
+        <div class="yours ${gpaCmp}">${prof.gpa ? prof.gpa+' (yours)' : 'Not entered'}</div></div>
+      <div class="stat-card"><div class="val">${uni.ielts_min}+</div><div class="lbl">IELTS minimum</div>
+        <div class="yours ${ieltsCmp}">${prof.ielts ? prof.ielts+' (yours)' : 'Not entered'}</div></div>
+      <div class="stat-card"><div class="val">${uni.act_25||'—'}–${uni.act_75||'—'}</div><div class="lbl">ACT mid 50%</div></div>
+    </div>
+
+    <!-- Two-column -->
+    <div class="detail-grid">
+      <!-- Left: tabs -->
+      <div>
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
+          <button class="tab-btn" onclick="showTab('requirements')">Requirements</button>
+          <button class="tab-btn" onclick="showTab('deadlines')">Deadlines</button>
+        </div>
+
+        <!-- Overview tab -->
+        <div class="tab-panel active" id="tab-overview">
+          <div class="section-heading">Why this school fits you</div>
+          <div class="card card-sm" style="margin-bottom:1rem;">
+            <p style="font-size:14px;color:var(--slate);line-height:1.7;">${uni.whyFit}</p>
+          </div>
+          <div class="section-heading">Your key action</div>
+          <div class="alert alert-info"><span class="alert-dot"></span><div>${uni.keyAction}</div></div>
+          <div class="section-heading">Financial aid</div>
+          <div class="card card-sm" style="margin-bottom:1.5rem;">
+            <p style="font-size:13px;color:var(--slate);line-height:1.65;">${uni.aidNote}</p>
+          </div>
+          <div class="section-heading">Gap analysis</div>
+          ${buildGapAlert(scores, uni, prof)}
+        </div>
+
+        <!-- Requirements tab -->
+        <div class="tab-panel" id="tab-requirements">
+          <div class="section-heading">Admission requirements</div>
+          <table class="req-table">
+            <tr><td class="r-label">SAT Middle 50%</td><td class="r-val">${p25sat} – ${p75sat}</td></tr>
+            <tr><td class="r-label">ACT Middle 50%</td><td class="r-val">${uni.act_25||'—'} – ${uni.act_75||'—'}</td></tr>
+            <tr><td class="r-label">Average GPA</td><td class="r-val">${uni.gpa_avg}</td></tr>
+            <tr><td class="r-label">IELTS Minimum</td><td class="r-val">${uni.ielts_min}</td></tr>
+            <tr><td class="r-label">Personal Essay</td><td class="r-val">${(uni.requirements||{}).essay ? 'Required (650 words)' : 'Optional'}</td></tr>
+            <tr><td class="r-label">Supplement</td><td class="r-val">${(uni.requirements||{}).supplement || 'None'}</td></tr>
+            <tr><td class="r-label">Recommendations</td><td class="r-val">${(uni.requirements||{}).recs || 'See website'}</td></tr>
+            <tr><td class="r-label">Interview</td><td class="r-val">${(uni.requirements||{}).interview || 'Not offered'}</td></tr>
+            <tr><td class="r-label">Application Fee</td><td class="r-val">$${(uni.requirements||{}).fee || 75}</td></tr>
+          </table>
+          <div class="section-heading" style="margin-top:1.75rem;">Your profile vs. requirements</div>
+          <table class="req-table">
+            <tr>
+              <td class="r-label">Your SAT</td>
+              <td class="r-val">
+                <div class="compare-row">
+                  <span>${userSat || '—'}</span>
+                  <span class="comp-badge comp-${satCmp}">${cmpLabel[satCmp]}</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="r-label">Your GPA</td>
+              <td class="r-val">
+                <div class="compare-row">
+                  <span>${prof.gpa || '—'}</span>
+                  <span class="comp-badge comp-${gpaCmp}">${cmpLabel[gpaCmp]}</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="r-label">Your IELTS</td>
+              <td class="r-val">
+                <div class="compare-row">
+                  <span>${prof.ielts || '—'}</span>
+                  <span class="comp-badge comp-${ieltsCmp}">${prof.ielts ? cmpLabel[ieltsCmp] : '— Not entered'}</span>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Deadlines tab -->
+        <div class="tab-panel" id="tab-deadlines">
+          <div class="section-heading">Application deadlines</div>
+          ${dlItems.map(d => `
+            <div class="deadline-card">
+              <div><div class="dl-type">${d.type}</div><div class="dl-name">${d.name}</div></div>
+              <div><div class="dl-date">${fmt(d.date)}</div><div class="dl-note">${d.note}</div></div>
+            </div>`).join('')}
+          <div class="section-heading" style="margin-top:1.5rem;">Application timeline</div>
+          <div class="timeline">
+            <div class="tl-item tl-done">
+              <div class="tl-period">Now — September 15</div>
+              <div class="tl-desc">Draft your Common App personal statement. Request recommendation letters from teachers and counselor.</div>
+            </div>
+            <div class="tl-item tl-current">
+              <div class="tl-period">October 1 — October 25</div>
+              <div class="tl-desc">Finalize essays. Complete ${uni.name.split(' ')[0]} supplement. Confirm SAT/ACT scores are sent.</div>
+            </div>
+            <div class="tl-item tl-future">
+              <div class="tl-period">${fmt(dl.ed || dl.ea || dl.rd)}</div>
+              <div class="tl-desc">Submit ${dl.ed ? 'ED' : dl.ea ? 'EA' : 'RD'} application. Double-check all materials are complete.</div>
+            </div>
+            <div class="tl-item tl-future">
+              <div class="tl-period">December – April 2026</div>
+              <div class="tl-desc">Receive decision. Compare financial aid packages. Commit by May 1.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: radar sticky -->
+      <div class="radar-card">
+        <div class="radar-title">Chance breakdown</div>
+        <div class="radar-sub">Your profile scored against ${uni.name.split(' ').slice(0,2).join(' ')}'s requirements</div>
+        <div class="radar-center" id="radarContainer"></div>
+        <div id="scoreBars"></div>
+        <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+          <div style="font-size:11px;color:var(--slate-dim);text-align:center;line-height:1.5;">Overall chance based on weighted score across all 5 metrics</div>
+          <div style="text-align:center;margin-top:8px;">
+            <span style="font-size:2rem;font-weight:700;font-family:'Playfair Display',serif;color:${tierColor};">${final}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Render radar
+  document.getElementById('radarContainer').innerHTML = buildRadar(scores, tier, 260);
+
+  // Render score bars
+  const barData = [
+    { label:'SAT / ACT', score:scores.sat,   color:'#9FACFB' },
+    { label:'GPA',        score:scores.gpa,   color:'#E0A020' },
+    { label:'IELTS',      score:scores.ielts, color:'#2DBF7B' },
+    { label:'Essay',      score:scores.essay, color:'#B8C4FF' },
+    { label:'Activities', score:scores.ec,    color:'#E0115F' },
+  ];
+  document.getElementById('scoreBars').innerHTML = barData.map(b => `
+    <div class="score-bar-row">
+      <div class="sb-dot" style="background:${b.color};"></div>
+      <div class="sb-label">${b.label}</div>
+      <div class="sb-track"><div class="sb-fill" style="width:${Math.round(b.score)}%;background:${b.color};"></div></div>
+      <div class="sb-pct">${Math.round(b.score)}%</div>
+    </div>`).join('');
+
+  // Store for save button
+  window._currentUni = { uni, final, tier };
+}
+
+function buildGapAlert(scores, uni, prof) {
+  const gaps = [];
+  if (scores.sat < 55 && (prof.sat || prof.act)) gaps.push(`Your SAT/ACT score is below the school's 25th percentile. Consider retaking to improve your position.`);
+  if (scores.gpa < 50 && prof.gpa) gaps.push(`Your GPA of ${prof.gpa} is below the school's average of ${uni.gpa_avg}. Strong essays and ECs can compensate.`);
+  if (scores.ielts < 50 && prof.ielts) gaps.push(`Your IELTS ${prof.ielts} is below the required minimum of ${uni.ielts_min}. You must meet this requirement to be eligible.`);
+  if (scores.ec < 45) gaps.push(`Your extracurricular profile is weak relative to this school's typical admits. Add more activities or leadership roles.`);
+
+  if (gaps.length === 0) {
+    return `<div class="alert alert-success"><span class="alert-dot"></span><div>Your profile meets or exceeds most requirements for ${uni.name}. Focus on writing a standout essay.</div></div>`;
+  }
+  return gaps.map(g => `<div class="alert alert-warn" style="margin-bottom:8px;"><span class="alert-dot"></span><div>${g}</div></div>`).join('');
+}
+
+function showTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+async function saveThisSchool() {
+  const { uni, final, tier } = window._currentUni || {};
+  if (!uni) return;
+  try {
+    await apiPost('/saved', { session_id: getSessionId(), school_id: uni.id, school_name: uni.name, chance: final, tier });
+    toast(`${uni.name} saved!`, 'success');
+  } catch { toast('Could not save', 'error'); }
+}
+
+init();
+</script>
+</body>
+</html>

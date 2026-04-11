@@ -1,0 +1,19 @@
+# render.yaml — deploy backend on Render free tier
+services:
+  - type: web
+    name: unijourney-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: unijourney-db
+          property: connectionString
+      - key: FRONTEND_URL
+        value: https://unijourney.vercel.app  # update after Vercel deploy
+
+databases:
+  - name: unijourney-db
+    databaseName: unijourney
+    plan: free

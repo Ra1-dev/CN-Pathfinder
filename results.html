@@ -1,932 +1,349 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admitly — Your School List</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
-
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --ruby:        #E0115F;
-      --ruby-deep:   #A80D47;
-      --ruby-soft:   #F24080;
-      --ruby-dim:    rgba(224, 17, 95, 0.18);
-      --void:        #06080F;
-      --void-2:      #0D1018;
-      --void-3:      #141720;
-      --void-4:      #1C2030;
-      --cream:       #F3E5AB;
-      --cream-dim:   #D9C97A;
-      --cream-ghost: rgba(243, 229, 171, 0.08);
-      --slate:       #8B92A8;
-      --slate-dim:   #555C72;
-      --border:      rgba(243, 229, 171, 0.1);
-      --border-mid:  rgba(243, 229, 171, 0.22);
-      --reach-color:  #F24080;
-      --match-color:  #E0A020;
-      --safety-color: #2DBF7B;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px; line-height: 1.65;
-      color: var(--cream);
-      background: var(--void);
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-    }
-
-    /* ── Nav ─────────────────────────────────────────────── */
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 clamp(1.5rem, 5vw, 3rem);
-      height: 60px;
-      background: rgba(6,8,15,0.92);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .logo {
-      font-family: 'Lora', serif; font-size: 1.15rem; font-weight: 600;
-      color: var(--cream); text-decoration: none;
-      display: flex; align-items: center; gap: 8px;
-    }
-
-    .logo-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: var(--ruby); box-shadow: 0 0 7px var(--ruby);
-    }
-
-    .nav-tabs {
-      display: flex; gap: 2px; list-style: none;
-    }
-
-    .nav-tab {
-      font-size: 13px; padding: 6px 14px; border-radius: 7px;
-      color: var(--slate); cursor: pointer;
-      text-decoration: none; transition: all .15s;
-    }
-
-    .nav-tab:hover { color: var(--cream); background: var(--cream-ghost); }
-    .nav-tab.active { color: var(--cream); background: var(--ruby-dim); }
-
-    .nav-right { display: flex; align-items: center; gap: 10px; }
-
-    .btn-sm {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
-      border-radius: 7px; padding: 6px 14px;
-      cursor: pointer; text-decoration: none; transition: all .2s; border: none;
-    }
-
-    .btn-outline-sm {
-      background: transparent; border: 1px solid var(--border-mid); color: var(--slate);
-    }
-    .btn-outline-sm:hover { color: var(--cream); background: var(--cream-ghost); }
-
-    .btn-ruby-sm { background: var(--ruby); color: #fff; }
-    .btn-ruby-sm:hover { background: var(--ruby-deep); }
-
-    /* ── Page layout ─────────────────────────────────────── */
-    .page { max-width: 900px; margin: 0 auto; padding: 2rem clamp(1rem, 4vw, 2.5rem) 4rem; }
-
-    /* ── Profile bar ─────────────────────────────────────── */
-    .profile-bar {
-      background: var(--void-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px 20px;
-      display: flex; align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap; gap: 12px;
-      margin-bottom: 1.5rem;
-    }
-
-    .profile-bar-left { display: flex; align-items: center; gap: 12px; }
-
-    .avatar {
-      width: 38px; height: 38px; border-radius: 50%;
-      background: var(--ruby-dim);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 500; color: var(--ruby-soft);
-      flex-shrink: 0;
-    }
-
-    .profile-name { font-size: 15px; font-weight: 500; color: var(--cream); }
-    .profile-meta { font-size: 12px; color: var(--slate); margin-top: 1px; }
-
-    .profile-stats { display: flex; gap: 20px; }
-
-    .pstat { text-align: right; }
-    .pstat-val { font-size: 17px; font-weight: 500; color: var(--cream); }
-    .pstat-label { font-size: 11px; color: var(--slate-dim); margin-top: 1px; }
-
-    /* ── Alerts ──────────────────────────────────────────── */
-    .alert {
-      border-radius: 10px; padding: 12px 16px;
-      font-size: 13px; line-height: 1.6;
-      display: flex; gap: 10px; align-items: flex-start;
-      margin-bottom: 10px;
-    }
-
-    .alert-warn {
-      background: rgba(201,134,10,0.1);
-      border: 1px solid rgba(201,134,10,0.3);
-      color: #E0B84A;
-    }
-
-    .alert-info {
-      background: rgba(224,17,95,0.08);
-      border: 1px solid rgba(224,17,95,0.2);
-      color: var(--ruby-soft);
-    }
-
-    .alert-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: currentColor; flex-shrink: 0; margin-top: 5px;
-    }
-
-    /* ── Summary strip ───────────────────────────────────── */
-    .summary-strip {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 10px; margin-bottom: 1.5rem;
-    }
-
-    .sum-card {
-      background: var(--void-2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 16px;
-      text-align: center;
-    }
-
-    .sum-num { font-size: 24px; font-weight: 500; line-height: 1; }
-    .sum-num.reach  { color: var(--reach-color); }
-    .sum-num.match  { color: var(--match-color); }
-    .sum-num.safety { color: var(--safety-color); }
-    .sum-label { font-size: 11px; color: var(--slate-dim); margin-top: 5px; }
-
-    /* ── Filter row ──────────────────────────────────────── */
-    .filter-row {
-      display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 1.25rem;
-      align-items: center;
-    }
-
-    .filter-chip {
-      padding: 5px 14px; border-radius: 20px;
-      border: 1px solid var(--border);
-      font-size: 12px; cursor: pointer;
-      color: var(--slate); background: var(--void-2);
-      transition: all .15s; user-select: none;
-    }
-
-    .filter-chip:hover { border-color: var(--border-mid); color: var(--cream); }
-    .filter-chip.on { background: var(--ruby-dim); border-color: var(--ruby); color: var(--ruby-soft); }
-
-    .filter-sep { color: var(--slate-dim); font-size: 12px; margin: 0 4px; }
-
-    /* ── School cards ────────────────────────────────────── */
-    .school-card {
-      background: var(--void-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      margin-bottom: 10px;
-      overflow: hidden;
-      transition: border-color .15s;
-      cursor: pointer;
-    }
-
-    .school-card:hover { border-color: var(--border-mid); }
-
-    .school-card.reach  { border-left: 3px solid var(--reach-color); }
-    .school-card.match  { border-left: 3px solid var(--match-color); }
-    .school-card.safety { border-left: 3px solid var(--safety-color); }
-
-    .card-main {
-      padding: 16px 20px;
-      display: flex; align-items: flex-start;
-      justify-content: space-between; gap: 16px;
-    }
-
-    .card-left { flex: 1; min-width: 0; }
-
-    .card-top-row {
-      display: flex; align-items: center; gap: 8px;
-      flex-wrap: wrap; margin-bottom: 3px;
-    }
-
-    .school-name {
-      font-size: 15px; font-weight: 500; color: var(--cream);
-    }
-
-    .tier-tag {
-      font-size: 11px; font-weight: 500;
-      padding: 2px 8px; border-radius: 4px;
-    }
-
-    .tier-tag.reach  { background: rgba(242,64,128,.15); color: var(--reach-color); }
-    .tier-tag.match  { background: rgba(224,160,32,.15); color: var(--match-color); }
-    .tier-tag.safety { background: rgba(45,191,123,.15); color: var(--safety-color); }
-
-    .school-loc { font-size: 12px; color: var(--slate-dim); margin-bottom: 8px; }
-
-    .insight-row { display: flex; gap: 6px; flex-wrap: wrap; }
-
-    .insight-pill {
-      font-size: 11px; padding: 3px 9px; border-radius: 5px;
-    }
-
-    .ip-good { background: rgba(45,191,123,.12); color: #2DBF7B; }
-    .ip-warn { background: rgba(224,160,32,.12); color: #E0A020; }
-    .ip-info { background: rgba(243,229,171,.08); color: var(--slate); }
-
-    .card-right {
-      display: flex; flex-direction: column;
-      align-items: flex-end; gap: 4px; flex-shrink: 0;
-    }
-
-    .chance-pct { font-size: 22px; font-weight: 500; line-height: 1; }
-    .chance-pct.reach  { color: var(--reach-color); }
-    .chance-pct.match  { color: var(--match-color); }
-    .chance-pct.safety { color: var(--safety-color); }
-
-    .chance-label { font-size: 11px; color: var(--slate-dim); }
-
-    .bar-track {
-      height: 3px; background: var(--void-4);
-      border-radius: 2px; overflow: hidden;
-      margin: 8px 0 0;
-    }
-
-    .bar-fill { height: 100%; border-radius: 2px; transition: width .8s ease; }
-    .bar-fill.reach  { background: var(--reach-color); }
-    .bar-fill.match  { background: var(--match-color); }
-    .bar-fill.safety { background: var(--safety-color); }
-
-    /* ── Expanded card ───────────────────────────────────── */
-    .card-expand {
-      display: none;
-      padding: 0 20px 18px;
-      border-top: 1px solid var(--border);
-    }
-
-    .school-card.open .card-expand { display: block; }
-
-    .expand-grid {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 14px; margin: 14px 0;
-    }
-
-    .expand-block label {
-      font-size: 10px; font-weight: 500;
-      text-transform: uppercase; letter-spacing: .06em;
-      color: var(--slate-dim); display: block; margin-bottom: 5px;
-    }
-
-    .expand-block p {
-      font-size: 13px; color: var(--slate); line-height: 1.65;
-    }
-
-    .expand-block p strong { color: var(--cream); font-weight: 500; }
-
-    .action-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-
-    .btn-action {
-      font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
-      padding: 6px 13px; border-radius: 7px; cursor: pointer;
-      transition: all .15s; text-decoration: none;
-      display: inline-flex; align-items: center; gap: 5px;
-    }
-
-    .btn-action-primary {
-      background: var(--ruby); color: #fff; border: none;
-    }
-    .btn-action-primary:hover { background: var(--ruby-deep); }
-
-    .btn-action-ghost {
-      background: transparent;
-      border: 1px solid var(--border-mid);
-      color: var(--slate);
-    }
-    .btn-action-ghost:hover { color: var(--cream); border-color: var(--border-mid); background: var(--cream-ghost); }
-
-    /* ── No profile state ────────────────────────────────── */
-    .no-profile {
-      text-align: center; padding: 5rem 2rem;
-    }
-
-    .no-profile h2 {
-      font-family: 'Lora', serif; font-size: 1.8rem; font-weight: 600;
-      color: var(--cream); margin-bottom: .75rem;
-    }
-
-    .no-profile p {
-      font-size: 15px; color: var(--slate); margin-bottom: 2rem; line-height: 1.7;
-    }
-
-    .btn-lg {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
-      background: var(--ruby); color: #fff;
-      border-radius: 10px; padding: .85rem 2rem;
-      cursor: pointer; text-decoration: none; border: none; transition: all .2s;
-    }
-    .btn-lg:hover { background: var(--ruby-deep); }
-
-    /* ── Section header ──────────────────────────────────── */
-    .section-head {
-      display: flex; align-items: baseline;
-      justify-content: space-between; margin-bottom: 1rem;
-    }
-
-    .section-label {
-      font-size: 11px; font-weight: 500;
-      text-transform: uppercase; letter-spacing: .07em;
-      color: var(--slate-dim);
-    }
-
-    .section-count { font-size: 12px; color: var(--slate-dim); }
-
-    /* ── Responsive ──────────────────────────────────────── */
-    @media (max-width: 600px) {
-      .summary-strip { grid-template-columns: repeat(3,1fr); }
-      .profile-stats { display: none; }
-      .expand-grid { grid-template-columns: 1fr; }
-      .nav-tabs { display: none; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UniJourney — Your School List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.results-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: calc(100vh - 64px);
+}
+
+/* ── Left panel: profile + filters ─── */
+.left-panel {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 2rem 1.5rem;
+  position: sticky; top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+.profile-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.5rem;
+}
+.profile-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--pri-dim); display: flex;
+  align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600; color: var(--pri-soft);
+  margin-bottom: 10px;
+}
+.profile-name { font-size: 15px; font-weight: 600; color: var(--white); }
+.profile-sub  { font-size: 12px; color: var(--slate); margin-top: 2px; margin-bottom: 14px; }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.stat-box {
+  background: var(--bg4); border-radius: 8px;
+  padding: 8px 10px; text-align: center;
+}
+.stat-val { font-size: 16px; font-weight: 600; color: var(--white); }
+.stat-lbl { font-size: 10px; color: var(--slate-dim); margin-top: 1px; }
+
+.filter-section { margin-top: 1.5rem; }
+.filter-label {
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--slate-dim); margin-bottom: 10px;
+}
+.filter-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.f-chip {
+  padding: 5px 12px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--bg3);
+  font-size: 12px; color: var(--slate);
+  cursor: pointer; transition: all .15s;
+}
+.f-chip:hover { border-color: var(--border-mid); color: var(--white); }
+.f-chip.on { background: var(--pri-dim); border-color: var(--pri); color: var(--pri-soft); }
+
+.summary-boxes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 1.5rem; }
+.sum-box { background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 10px 8px; text-align: center; }
+.sum-n { font-size: 22px; font-weight: 600; }
+.sum-l { font-size: 9px; color: var(--slate-dim); margin-top: 2px; }
+
+/* ── Right panel: school cards ─── */
+.right-panel { padding: 2.5rem clamp(1.5rem, 4vw, 3rem); }
+.results-header { margin-bottom: 1.5rem; }
+.results-header h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--white); }
+.results-header h1 em { font-style: italic; color: var(--pri-soft); }
+.results-count { font-size: 13px; color: var(--slate); margin-top: 4px; }
+
+.school-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); margin-bottom: 10px;
+  overflow: hidden; transition: border-color .2s; cursor: pointer;
+}
+.school-card:hover { border-color: var(--border-mid); }
+.school-card.reach  { border-left: 3px solid var(--red); }
+.school-card.target { border-left: 3px solid var(--amber); }
+.school-card.likely { border-left: 3px solid var(--green); }
+
+.card-top {
+  padding: 16px 20px;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+}
+.card-left { flex: 1; }
+.card-name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 3px; }
+.card-name { font-size: 15px; font-weight: 600; color: var(--white); }
+.card-location { font-size: 12px; color: var(--slate-dim); margin-bottom: 10px; }
+.insights { display: flex; gap: 6px; flex-wrap: wrap; }
+.ins-pill { font-size: 11px; padding: 3px 8px; border-radius: 5px; }
+.ip-good { background: var(--green-dim); color: var(--green); }
+.ip-warn { background: var(--amber-dim); color: var(--amber); }
+.ip-info { background: var(--pri-dim);   color: var(--pri-soft); }
+
+.card-right { text-align: right; flex-shrink: 0; }
+.card-pct { font-size: 28px; font-weight: 700; line-height: 1; }
+.card-pct-label { font-size: 11px; color: var(--slate-dim); margin-top: 2px; }
+
+.card-bar { height: 3px; background: var(--bg4); margin: 0 20px 0; border-radius: 2px; overflow: hidden; }
+.card-bar-fill { height: 100%; border-radius: 2px; transition: width .8s ease; }
+
+.card-metrics {
+  display: flex; gap: 0; padding: 10px 20px 14px;
+  border-top: 1px solid var(--border);
+}
+.cm-item { flex: 1; text-align: center; }
+.cm-item + .cm-item { border-left: 1px solid var(--border); }
+.cm-val { font-size: 12px; font-weight: 500; color: var(--white); }
+.cm-lbl { font-size: 10px; color: var(--slate-dim); margin-top: 2px; }
+.cm-bar { height: 2px; background: var(--bg4); border-radius: 1px; margin: 4px 8px 0; overflow: hidden; }
+.cm-bar-fill { height: 100%; border-radius: 1px; }
+
+.card-expand { display: none; border-top: 1px solid var(--border); padding: 16px 20px 20px; }
+.school-card.open .card-expand { display: block; }
+.expand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px; }
+.expand-block label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--slate-dim); display: block; margin-bottom: 5px; }
+.expand-block p { font-size: 13px; color: var(--slate); line-height: 1.65; }
+.expand-block p strong { color: var(--white); font-weight: 500; }
+.expand-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+.no-profile-state { text-align: center; padding: 5rem 2rem; }
+.no-profile-state h2 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--white); margin-bottom: .75rem; }
+.no-profile-state p { color: var(--slate); margin-bottom: 2rem; line-height: 1.7; }
+
+@media (max-width: 900px) {
+  .results-layout { grid-template-columns: 1fr; }
+  .left-panel { display: none; }
+}
+@media (max-width: 600px) {
+  .expand-grid { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body>
 
-  <!-- ── Nav ─────────────────────────────────────────────── -->
-  <nav>
-    <a href="index.html" class="logo"><span class="logo-dot"></span>Admitly</a>
-    <ul class="nav-tabs">
-      <li><a class="nav-tab active" href="results.html">School list</a></li>
-      <li><a class="nav-tab" href="#">Timeline</a></li>
-      <li><a class="nav-tab" href="#">Essays</a></li>
-      <li><a class="nav-tab" href="profile.html">Profile</a></li>
-    </ul>
-    <div class="nav-right">
-      <a href="profile.html" class="btn-sm btn-outline-sm">Edit profile</a>
+<nav>
+  <a href="index.html" class="logo"><span class="logo-dot"></span>UniJourney</a>
+  <ul class="nav-links">
+    <li><a href="results.html" style="color:var(--white);">My list</a></li>
+    <li><a href="profile.html">Edit profile</a></li>
+  </ul>
+  <a href="profile.html" class="btn btn-primary btn-sm">Edit profile</a>
+</nav>
+
+<div class="results-layout">
+
+  <!-- Left: profile summary + filters -->
+  <aside class="left-panel" id="leftPanel">
+    <div class="profile-card">
+      <div class="profile-avatar" id="profileAvatar">?</div>
+      <div class="profile-name" id="profileName">Loading...</div>
+      <div class="profile-sub"  id="profileSub">—</div>
+      <div class="stats-grid">
+        <div class="stat-box"><div class="stat-val" id="statSat">—</div><div class="stat-lbl">SAT</div></div>
+        <div class="stat-box"><div class="stat-val" id="statGpa">—</div><div class="stat-lbl">GPA</div></div>
+        <div class="stat-box"><div class="stat-val" id="statIelts">—</div><div class="stat-lbl">IELTS</div></div>
+        <div class="stat-box"><div class="stat-val" id="statActs">—</div><div class="stat-lbl">Activities</div></div>
+      </div>
     </div>
-  </nav>
 
-  <div class="page" id="pageContent">
-    <!-- Rendered by JS -->
+    <div class="summary-boxes">
+      <div class="sum-box"><div class="sum-n reach" id="cntReach">—</div><div class="sum-l">Reach</div></div>
+      <div class="sum-box"><div class="sum-n target" id="cntTarget">—</div><div class="sum-l">Target</div></div>
+      <div class="sum-box"><div class="sum-n likely" id="cntLikely">—</div><div class="sum-l">Likely</div></div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-label">Filter by tier</div>
+      <div class="filter-chips">
+        <div class="f-chip on" data-f="all"    onclick="setFilter('all')">All schools</div>
+        <div class="f-chip"    data-f="reach"  onclick="setFilter('reach')">Reach</div>
+        <div class="f-chip"    data-f="target" onclick="setFilter('target')">Target</div>
+        <div class="f-chip"    data-f="likely" onclick="setFilter('likely')">Likely</div>
+      </div>
+    </div>
+
+    <div class="filter-section" style="margin-top:1.25rem;">
+      <a href="profile.html" class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:.5rem;">← Edit my profile</a>
+    </div>
+  </aside>
+
+  <!-- Right: school list -->
+  <div class="right-panel">
+    <div id="pageContent">
+      <div style="text-align:center;padding:4rem;color:var(--slate);">Loading your results...</div>
+    </div>
   </div>
+</div>
 
-  <script>
-    // ─────────────────────────────────────────────────────
-    // SCHOOL DATABASE
-    // Each school has base stats; chances are calculated
-    // dynamically against the student's actual profile.
-    // ─────────────────────────────────────────────────────
-    const SCHOOLS = [
-      {
-        id: 'umich',
-        name: 'University of Michigan',
-        shortName: 'U of Michigan',
-        loc: 'Ann Arbor, MI',
-        state: 'MI',
-        tuition: 55000,
-        intlPct: 8,
-        medGPA: 3.9,
-        medSAT: 1500,
-        intlAid: false,
-        strongMajors: ['Computer Science','Engineering','Business','Economics','Political Science','Environmental Science'],
-        baseTier: 'reach',
-        aidNote: 'Very limited aid for international students. Some merit-based awards through specific colleges.',
-        whyFit: 'Top-10 program in most majors. Huge alumni network in tech and finance. Large, vibrant campus.',
-        keyAction: 'Write a compelling "Why Michigan" essay. Highlight leadership roles and any competitions won.',
-        deadlines: 'Early Action: Nov 1 · Regular Decision: Feb 1',
-        insights: [
-          { text: 'Top 10 nationally', type: 'good' },
-          { text: 'Limited intl aid', type: 'warn' },
-          { text: 'Test-optional', type: 'info' }
-        ]
-      },
-      {
-        id: 'gatech',
-        name: 'Georgia Institute of Technology',
-        shortName: 'Georgia Tech',
-        loc: 'Atlanta, GA',
-        state: 'GA',
-        tuition: 32000,
-        intlPct: 12,
-        medGPA: 3.95,
-        medSAT: 1510,
-        intlAid: false,
-        strongMajors: ['Computer Science','Engineering','Mathematics','Environmental Science'],
-        baseTier: 'reach',
-        aidNote: 'No need-based aid for internationals. Out-of-state tuition ~$32k is relatively affordable for the prestige.',
-        whyFit: 'One of the best engineering and CS programs in the world. More affordable than comparable private schools.',
-        keyAction: 'Strong math and CS coursework is critical. Mention coding projects, competitions, or research.',
-        deadlines: 'Early Action: Oct 15 · Regular Decision: Jan 1',
-        insights: [
-          { text: 'Affordable top school', type: 'good' },
-          { text: 'Strong CS focus', type: 'good' },
-          { text: 'SAT helps here', type: 'warn' }
-        ]
-      },
-      {
-        id: 'uiuc',
-        name: 'Univ. of Illinois Urbana-Champaign',
-        shortName: 'UIUC',
-        loc: 'Champaign, IL',
-        state: 'IL',
-        tuition: 36000,
-        intlPct: 14,
-        medGPA: 3.85,
-        medSAT: 1490,
-        intlAid: false,
-        strongMajors: ['Computer Science','Engineering','Business','Mathematics'],
-        baseTier: 'reach',
-        aidNote: 'Very limited need-based aid for internationals. Some college-level merit scholarships.',
-        whyFit: 'World-class CS and Engineering. Huge tech recruiting. Strong international student community.',
-        keyAction: 'Apply directly to CS — it is harder than undeclared. Demonstrate real coding experience.',
-        deadlines: 'Early Action: Nov 1 · Regular Decision: Jan 5',
-        insights: [
-          { text: '#5 CS program', type: 'good' },
-          { text: 'Large intl community', type: 'good' },
-          { text: 'CS is highly competitive', type: 'warn' }
-        ]
-      },
-      {
-        id: 'northeastern',
-        name: 'Northeastern University',
-        shortName: 'Northeastern',
-        loc: 'Boston, MA',
-        state: 'MA',
-        tuition: 62000,
-        intlPct: 20,
-        medGPA: 3.7,
-        medSAT: 1430,
-        intlAid: true,
-        strongMajors: ['Computer Science','Engineering','Business','Pre-Med','Political Science','International Relations'],
-        baseTier: 'match',
-        aidNote: 'Meets financial need for some international students. Merit scholarships up to $25k/yr available.',
-        whyFit: 'Famous co-op program gives 6 months of paid work at US tech companies. 20% international students.',
-        keyAction: 'Highlight career goals and genuine interest in the co-op program in your essays.',
-        deadlines: 'Early Decision: Nov 1 · Regular Decision: Jan 1',
-        insights: [
-          { text: 'Co-op = US work exp', type: 'good' },
-          { text: '20% intl students', type: 'good' },
-          { text: 'Aid possible', type: 'good' }
-        ]
-      },
-      {
-        id: 'umass',
-        name: 'Univ. of Massachusetts Amherst',
-        shortName: 'UMass Amherst',
-        loc: 'Amherst, MA',
-        state: 'MA',
-        tuition: 38000,
-        intlPct: 10,
-        medGPA: 3.7,
-        medSAT: 1360,
-        intlAid: true,
-        strongMajors: ['Computer Science','Engineering','Business','Biology','Environmental Science','Psychology'],
-        baseTier: 'match',
-        aidNote: 'Offers merit-based aid to international students. Budget-friendly for a strong state flagship.',
-        whyFit: 'Strong programs, good value. Your GPA is right at their median. Aid makes it budget-realistic.',
-        keyAction: 'Apply Early Action. Strong essays can push a borderline applicant to admitted.',
-        deadlines: 'Early Action: Nov 1 · Regular Decision: Jan 15',
-        insights: [
-          { text: 'Aid available', type: 'good' },
-          { text: 'Your GPA matches', type: 'good' },
-          { text: 'EA deadline Nov 1', type: 'info' }
-        ]
-      },
-      {
-        id: 'cwru',
-        name: 'Case Western Reserve University',
-        shortName: 'Case Western',
-        loc: 'Cleveland, OH',
-        state: 'OH',
-        tuition: 58000,
-        intlPct: 12,
-        medGPA: 3.75,
-        medSAT: 1460,
-        intlAid: true,
-        strongMajors: ['Engineering','Pre-Med','Computer Science','Biology','Mathematics','Architecture'],
-        baseTier: 'match',
-        aidNote: 'Strong merit scholarships for international students. Some full-need coverage available.',
-        whyFit: 'Generous merit aid makes it realistic. Strong STEM programs. Good internship placements.',
-        keyAction: 'Apply Early Decision if it is your top choice — significant admission boost.',
-        deadlines: 'Early Decision: Nov 1 · Regular Decision: Jan 15',
-        insights: [
-          { text: 'Merit aid up to $30k', type: 'good' },
-          { text: 'Profile fits well', type: 'good' },
-          { text: 'ED gives big boost', type: 'info' }
-        ]
-      },
-      {
-        id: 'wisc',
-        name: 'University of Wisconsin–Madison',
-        shortName: 'UW Madison',
-        loc: 'Madison, WI',
-        state: 'WI',
-        tuition: 40000,
-        intlPct: 9,
-        medGPA: 3.8,
-        medSAT: 1410,
-        intlAid: false,
-        strongMajors: ['Computer Science','Business','Biology','Economics','Political Science','Environmental Science','Psychology'],
-        baseTier: 'match',
-        aidNote: 'Limited international aid. Strong research university with good industry connections.',
-        whyFit: 'Excellent research opportunities. Strong CS and business programs. Beautiful campus.',
-        keyAction: 'Apply to Letters & Science with CS intent — more flexible entry than direct CS.',
-        deadlines: 'Early Action: Nov 1 · Regular Decision: Feb 1',
-        insights: [
-          { text: 'Research university', type: 'good' },
-          { text: 'No intl aid', type: 'warn' },
-          { text: 'Strong alumni network', type: 'info' }
-        ]
-      },
-      {
-        id: 'psu',
-        name: 'Penn State University',
-        shortName: 'Penn State',
-        loc: 'University Park, PA',
-        state: 'PA',
-        tuition: 37000,
-        intlPct: 7,
-        medGPA: 3.6,
-        medSAT: 1280,
-        intlAid: true,
-        strongMajors: ['Engineering','Business','Computer Science','Pre-Med','Architecture','International Relations'],
-        baseTier: 'safety',
-        aidNote: 'Some merit scholarships for international students. Large school with many scholarship opportunities.',
-        whyFit: 'Large alumni network. Strong industry connections. Broad major selection.',
-        keyAction: 'Apply to your specific college directly — Schreyer Honors College worth applying to.',
-        deadlines: 'Early Action: Nov 1 · Regular Decision: Feb 15',
-        insights: [
-          { text: 'Strong alumni base', type: 'good' },
-          { text: 'Merit aid possible', type: 'good' },
-          { text: 'Below your GPA', type: 'info' }
-        ]
-      },
-      {
-        id: 'alabama',
-        name: 'University of Alabama',
-        shortName: 'U of Alabama',
-        loc: 'Tuscaloosa, AL',
-        state: 'AL',
-        tuition: 31000,
-        intlPct: 4,
-        medGPA: 3.5,
-        medSAT: 1200,
-        intlAid: true,
-        strongMajors: ['Business','Engineering','Computer Science','Pre-Med','Architecture','Psychology'],
-        baseTier: 'safety',
-        aidNote: 'Substantial merit scholarships for internationals. 3.7 GPA may qualify for $16k+/yr.',
-        whyFit: 'Very strong merit aid. Could bring annual costs well under your budget. Apply early.',
-        keyAction: 'Apply by Dec 1 — merit scholarships are first-come, first-served.',
-        deadlines: 'Priority scholarship deadline: Dec 1 · Regular Decision: Mar 1',
-        insights: [
-          { text: 'Up to $16k merit aid', type: 'good' },
-          { text: 'Budget feasible', type: 'good' },
-          { text: 'Apply by Dec 1', type: 'warn' }
-        ]
-      },
-      {
-        id: 'indiana',
-        name: 'Indiana University Bloomington',
-        shortName: 'Indiana U',
-        loc: 'Bloomington, IN',
-        state: 'IN',
-        tuition: 37000,
-        intlPct: 8,
-        medGPA: 3.5,
-        medSAT: 1200,
-        intlAid: true,
-        strongMajors: ['Business','Computer Science','Biology','Pre-Med','International Relations','Political Science','Economics'],
-        baseTier: 'safety',
-        aidNote: 'Kelley Business and Luddy Informatics schools have merit aid for international students.',
-        whyFit: 'One of the most international-friendly campuses in the Midwest. Strong business and tech programs.',
-        keyAction: 'Apply to Luddy School of Informatics for CS, or Kelley for business — both have strong outcomes.',
-        deadlines: 'Early Action: Nov 1 · Regular Decision: Feb 1',
-        insights: [
-          { text: 'Active intl community', type: 'good' },
-          { text: 'Luddy = strong CS', type: 'good' },
-          { text: 'Aid available', type: 'good' }
-        ]
-      }
-    ];
+<div id="toast"></div>
 
-    // ─────────────────────────────────────────────────────
-    // CHANCE CALCULATOR
-    // Real logic tuned for international applicants.
-    // Factors: GPA, SAT, major fit, intl aid need, firstGen.
-    // ─────────────────────────────────────────────────────
-    function calcChance(school, profile) {
-      const gpa   = parseFloat(profile.gpa) || 0;
-      const sat   = parseInt(profile.sat)   || 0;
-      const act   = parseInt(profile.act)   || 0;
-      const ib    = parseInt(profile.ib)    || 0;
+<script src="api.js"></script>
+<script>
+let allResults = [];
+let activeFilter = 'all';
+let profile = null;
 
-      // Convert ACT/IB to SAT-equivalent if no SAT
-      let effectiveSAT = sat;
-      if (!sat && act)  effectiveSAT = Math.round(act * 40 + 560);
-      if (!sat && !act && ib) effectiveSAT = Math.round((ib / 45) * 600 + 900);
+async function init() {
+  // Load profile from server or localStorage
+  profile = await loadProfile();
+  if (!profile) {
+    const local = localStorage.getItem('uj_profile_local');
+    if (local) profile = JSON.parse(local);
+  }
 
-      // --- GPA score (0-40 pts) ---
-      let gpaScore = 0;
-      if (gpa >= school.medGPA + 0.3)  gpaScore = 40;
-      else if (gpa >= school.medGPA)   gpaScore = 32;
-      else if (gpa >= school.medGPA - 0.15) gpaScore = 24;
-      else if (gpa >= school.medGPA - 0.3)  gpaScore = 14;
-      else if (gpa >= school.medGPA - 0.5)  gpaScore = 6;
-      else gpaScore = 0;
+  if (!profile || (!profile.gpa && !profile.sat && !profile.act)) {
+    document.getElementById('pageContent').innerHTML = `
+      <div class="no-profile-state">
+        <h2>No profile found</h2>
+        <p>Complete your profile first so we can calculate your personalized school list and admission chances.</p>
+        <a href="profile.html" class="btn btn-primary btn-lg">Build my profile →</a>
+      </div>`;
+    return;
+  }
 
-      // --- SAT score (0-35 pts) ---
-      let satScore = 0;
-      if (!effectiveSAT) {
-        // test-optional penalty — modest, not catastrophic
-        satScore = 12;
-      } else if (effectiveSAT >= school.medSAT + 60)  satScore = 35;
-      else if (effectiveSAT >= school.medSAT)          satScore = 28;
-      else if (effectiveSAT >= school.medSAT - 60)     satScore = 20;
-      else if (effectiveSAT >= school.medSAT - 120)    satScore = 12;
-      else if (effectiveSAT >= school.medSAT - 200)    satScore = 5;
-      else satScore = 0;
+  // Populate sidebar
+  const initials = ((profile.first_name||'?')[0]+(profile.last_name||'?'||'')[0]||'?').toUpperCase();
+  document.getElementById('profileAvatar').textContent = initials;
+  document.getElementById('profileName').textContent = profile.first_name ? `${profile.first_name}` + (profile.last_name ? ` ${profile.last_name}` : '') : 'Your profile';
+  document.getElementById('profileSub').textContent = [profile.grade, profile.country, profile.major].filter(Boolean).join(' · ') || 'No details yet';
+  document.getElementById('statSat').textContent   = profile.sat   || (profile.act ? `ACT ${profile.act}` : '—');
+  document.getElementById('statGpa').textContent   = profile.gpa   ? parseFloat(profile.gpa).toFixed(1) : '—';
+  document.getElementById('statIelts').textContent = profile.ielts ? parseFloat(profile.ielts).toFixed(1) : '—';
+  document.getElementById('statActs').textContent  = (profile.activities||[]).filter(Boolean).length;
 
-      // --- Major fit (0-10 pts) ---
-      let majorScore = 0;
-      if (profile.majors && profile.majors.length) {
-        const overlap = profile.majors.filter(m => school.strongMajors.includes(m));
-        majorScore = Math.min(overlap.length * 5, 10);
-      } else {
-        majorScore = 5; // undecided — neutral
-      }
+  // Calculate chances
+  const unis = await getUniversities();
+  allResults = unis.map(uni => {
+    const { final, scores } = calcChance(uni, profile);
+    return { uni, final, scores, tier: getTier(final) };
+  }).sort((a,b) => b.final - a.final);
 
-      // --- Activities (0-8 pts) ---
-      const actCount = (profile.activities || []).filter(a => a.name).length;
-      const actScore = Math.min(actCount * 2, 8);
+  document.getElementById('cntReach').textContent  = allResults.filter(r=>r.tier==='reach').length;
+  document.getElementById('cntTarget').textContent = allResults.filter(r=>r.tier==='target').length;
+  document.getElementById('cntLikely').textContent = allResults.filter(r=>r.tier==='likely').length;
 
-      // --- Essay presence (0-5 pts) ---
-      const essayScore = (profile.personalStatement && profile.personalStatement.length > 100) ? 5 : 0;
+  renderResults();
+}
 
-      // --- International penalty (-5 to -15 pts) ---
-      // International applicants compete in a smaller, harder pool
-      const intlPenalty = school.intlPct < 6 ? -15 : school.intlPct < 10 ? -10 : -5;
+function renderResults() {
+  const filtered = activeFilter === 'all' ? allResults : allResults.filter(r => r.tier === activeFilter);
 
-      // --- Budget mismatch penalty ---
-      let budgetPenalty = 0;
-      const budget = profile.budget || '';
-      if (budget.includes('Under $20,000') && !school.intlAid) budgetPenalty = -10;
-      else if (budget.includes('$20,000') && !school.intlAid && school.tuition > 50000) budgetPenalty = -5;
+  const alerts = [];
+  if (!profile.sat && !profile.act) alerts.push({ type:'warn', text:'<strong>No test score on file.</strong> Taking the SAT (aim 1350+) could move you from reach to target at several schools.' });
+  if (!profile.gpa) alerts.push({ type:'info', text:'<strong>GPA not entered.</strong> <a href="profile.html">Add your GPA</a> for more accurate chance scores.' });
 
-      // --- First gen boost ---
-      const firstGenBoost = profile.firstGen === 'yes' ? 3 : 0;
+  const alertsHtml = alerts.map(a => `<div class="alert alert-${a.type}"><span class="alert-dot"></span><div>${a.text}</div></div>`).join('');
 
-      // Total
-      const raw = gpaScore + satScore + majorScore + actScore + essayScore + intlPenalty + budgetPenalty + firstGenBoost;
+  document.getElementById('pageContent').innerHTML = `
+    <div class="results-header">
+      <h1>Your <em>personalized</em> school list</h1>
+      <div class="results-count" id="resultsCount">${filtered.length} schools · sorted by your chance</div>
+    </div>
+    ${alertsHtml}
+    <div id="schoolList"></div>
+    <p style="font-size:12px;color:var(--slate-dim);margin-top:2rem;line-height:1.6;">
+      Chance scores are estimates based on your profile, historical data, and Common Data Set reports.
+      Actual admission depends on essays, recommendations, and factors not captured here.
+    </p>`;
 
-      // Map to percentage with tier anchoring
-      let base = 0;
-      if (school.baseTier === 'reach')  base = 8;
-      if (school.baseTier === 'match')  base = 30;
-      if (school.baseTier === 'safety') base = 65;
+  renderCards();
+}
 
-      const maxAdd = school.baseTier === 'reach' ? 22 : school.baseTier === 'match' ? 35 : 25;
-      const totalPossible = 40 + 35 + 10 + 8 + 5; // max raw
-      const pct = base + Math.round((raw / totalPossible) * maxAdd);
+function renderCards() {
+  const filtered = activeFilter === 'all' ? allResults : allResults.filter(r => r.tier === activeFilter);
+  document.getElementById('resultsCount').textContent = `${filtered.length} schools · sorted by your chance`;
 
-      // Clamp sensibly
-      const min = school.baseTier === 'reach' ? 4 : school.baseTier === 'match' ? 10 : 40;
-      const max = school.baseTier === 'reach' ? 30 : school.baseTier === 'match' ? 70 : 92;
-      return Math.min(max, Math.max(min, pct));
-    }
+  document.getElementById('schoolList').innerHTML = filtered.map(r => {
+    const u = r.uni;
+    const tc = r.tier === 'reach' ? 'var(--red)' : r.tier === 'target' ? 'var(--amber)' : 'var(--green)';
+    const insights = [
+      u.acceptance_rate < 0.15 ? {t:'ip-warn',l:'Highly selective'} : null,
+      u.acceptance_rate > 0.5  ? {t:'ip-good',l:'Accessible'} : null,
+      u.ielts_min <= 6.5       ? {t:'ip-good',l:'IELTS 6.5+'} : {t:'ip-warn',l:'IELTS 7.0+'},
+    ].filter(Boolean).slice(0,3);
 
-    // ─────────────────────────────────────────────────────
-    // TIER ASSIGNMENT
-    // Re-tiers based on calculated chance, overriding base
-    // ─────────────────────────────────────────────────────
-    function getTier(chance) {
-      if (chance >= 55) return 'safety';
-      if (chance >= 22) return 'match';
-      return 'reach';
-    }
+    const insHtml = insights.map(i => `<span class="ins-pill ${i.t}">${i.l}</span>`).join('');
+    const metricBar = (v) => {
+      const c = v>=70?'var(--green)':v>=50?'var(--amber)':'var(--red)';
+      return `<div class="cm-bar"><div class="cm-bar-fill" style="width:${v}%;background:${c};"></div></div>`;
+    };
 
-    // ─────────────────────────────────────────────────────
-    // FILTER LOGIC
-    // ─────────────────────────────────────────────────────
-    let activeFilter = 'all';
-    let schoolResults = [];
-
-    function setFilter(f) {
-      activeFilter = f;
-      document.querySelectorAll('.filter-chip').forEach(c => {
-        c.classList.toggle('on', c.dataset.filter === f);
-      });
-      renderCards();
-    }
-
-    // ─────────────────────────────────────────────────────
-    // CARD EXPAND/COLLAPSE
-    // ─────────────────────────────────────────────────────
-    function toggleCard(id) {
-      const card = document.getElementById(id);
-      card.classList.toggle('open');
-    }
-
-    // ─────────────────────────────────────────────────────
-    // RENDER
-    // ─────────────────────────────────────────────────────
-    function renderCards() {
-      const list = document.getElementById('schoolList');
-      const filtered = schoolResults.filter(s => {
-        if (activeFilter === 'all')  return true;
-        if (activeFilter === 'aid')  return s.school.intlAid;
-        return s.tier === activeFilter;
-      });
-
-      const countEl = document.getElementById('schoolCount');
-      if (countEl) countEl.textContent = filtered.length + ' schools';
-
-      list.innerHTML = filtered.map(s => {
-        const pillsHtml = s.school.insights.map(i =>
-          `<span class="insight-pill ip-${i.type}">${i.text}</span>`
-        ).join('');
-
-        return `
-        <div class="school-card ${s.tier}" id="card-${s.school.id}" onclick="toggleCard('card-${s.school.id}')">
-          <div class="card-main">
-            <div class="card-left">
-              <div class="card-top-row">
-                <span class="school-name">${s.school.name}</span>
-                <span class="tier-tag ${s.tier}">${s.tier}</span>
-              </div>
-              <div class="school-loc">${s.school.loc} &nbsp;·&nbsp; ~$${Math.round(s.school.tuition/1000)}k/yr &nbsp;·&nbsp; ${s.school.intlPct}% intl</div>
-              <div class="bar-track"><div class="bar-fill ${s.tier}" style="width:${s.chance}%"></div></div>
-              <div class="insight-row" style="margin-top:8px;">${pillsHtml}</div>
-            </div>
-            <div class="card-right">
-              <div class="chance-pct ${s.tier}">${s.chance}%</div>
-              <div class="chance-label">your chance</div>
-            </div>
+    return `
+    <div class="school-card ${r.tier}" id="card-${u.id}" onclick="toggleCard('${u.id}')">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="card-name-row">
+            <span class="card-name">${u.name}</span>
+            <span class="badge-${r.tier}">${r.tier}</span>
           </div>
-          <div class="card-expand">
-            <div class="expand-grid">
-              <div class="expand-block">
-                <label>Why it fits you</label>
-                <p>${s.school.whyFit}</p>
-              </div>
-              <div class="expand-block">
-                <label>Financial aid</label>
-                <p>${s.school.aidNote}</p>
-              </div>
-              <div class="expand-block">
-                <label>Median admitted student</label>
-                <p><strong>GPA ${s.school.medGPA}</strong> &nbsp;·&nbsp; <strong>SAT ${s.school.medSAT}</strong><br>You: GPA ${s.profileGPA} · SAT ${s.profileSAT}</p>
-              </div>
-              <div class="expand-block">
-                <label>Your key action</label>
-                <p>${s.school.keyAction}</p>
-              </div>
-            </div>
-            <div class="expand-block" style="margin-bottom:10px;">
-              <label>Deadlines</label>
-              <p>${s.school.deadlines}</p>
-            </div>
-            <div class="action-row">
-              <button class="btn-action btn-action-primary" onclick="event.stopPropagation()">
-                Get advice for this school
-              </button>
-              <button class="btn-action btn-action-ghost" onclick="event.stopPropagation()">
-                Essay prompts
-              </button>
-              <button class="btn-action btn-action-ghost" onclick="event.stopPropagation()">
-                Add to timeline
-              </button>
-            </div>
-          </div>
-        </div>`;
-      }).join('');
-    }
-
-    // ─────────────────────────────────────────────────────
-    // INIT
-    // ─────────────────────────────────────────────────────
-    function init() {
-      const raw = localStorage.getItem('admitly_profile');
-      const page = document.getElementById('pageContent');
-
-      if (!raw) {
-        // No profile — show empty state
-        page.innerHTML = `
-          <div class="no-profile">
-            <h2>No profile found</h2>
-            <p>Complete your profile first so we can calculate your personalized school list and admission chances.</p>
-            <a href="profile.html" class="btn-lg">Build my profile →</a>
-          </div>`;
-        return;
-      }
-
-      const profile = JSON.parse(raw);
-      const gpa    = parseFloat(profile.gpa) || 0;
-      const sat    = parseInt(profile.sat)   || 0;
-      const name   = profile.firstName || 'Student';
-      const initials = ((profile.firstName||'?')[0] + (profile.lastName||'?')[0]).toUpperCase();
-      const majors = (profile.majors||[]).join(', ') || 'Undecided';
-      const country = profile.country || 'International';
-      const actCount = (profile.activities||[]).filter(a=>a.name).length;
-
-      // Calculate chances for all schools
-      schoolResults = SCHOOLS.map(school => {
-        const chance = calcChance(school, profile);
-        const tier   = getTier(chance);
-        return {
-          school,
-          chance,
-          tier,
-          profileGPA: gpa || '—',
-          profileSAT: sat || 'none'
-        };
-      }).sort((a, b) => b.chance - a.chance);
-
-      const reachCount  = schoolResults.filter(s => s.tier === 'reach').length;
-      const matchCount  = schoolResults.filter(s => s.tier === 'match').length;
-      const safetyCount = schoolResults.filter(s => s.tier === 'safety').length;
-
-      // Build alerts
-      const alerts = [];
-      if (!sat && !profile.act) {
-        alerts.push({ type: 'warn', text: `<strong>No test score on file.</strong> Taking the SAT (aim for 1350+) could move you from reach to match at several schools. Your chances above assume test-optional.` });
-      }
-      if (!gpa) {
-        alerts.push({ type: 'info', text: `<strong>GPA not entered.</strong> <a href="profile.html" style="color:var(--ruby-soft)">Add your GPA</a> to get more accurate chance scores.` });
-      }
-
-      const alertsHtml = alerts.map(a => `
-        <div class="alert alert-${a.type}">
-          <span class="alert-dot"></span>
-          <div>${a.text}</div>
-        </div>`).join('');
-
-      page.innerHTML = `
-        <div class="profile-bar">
-          <div class="profile-bar-left">
-            <div class="avatar">${initials}</div>
-            <div>
-              <div class="profile-name">${name} — ${country}</div>
-              <div class="profile-meta">${profile.grade||'High school'} · ${majors} · ${profile.budget||'Budget not set'}</div>
-            </div>
-          </div>
-          <div class="profile-stats">
-            <div class="pstat"><div class="pstat-val">${gpa||'—'}</div><div class="pstat-label">GPA</div></div>
-            <div class="pstat"><div class="pstat-val">${sat||'—'}</div><div class="pstat-label">SAT</div></div>
-            <div class="pstat"><div class="pstat-val">${actCount}</div><div class="pstat-label">Activities</div></div>
-            <div class="pstat"><div class="pstat-val">${schoolResults.length}</div><div class="pstat-label">Schools</div></div>
-          </div>
+          <div class="card-location">${u.city}, ${u.state} · ${u.type} · ${Math.round(u.acceptance_rate*100)}% admit rate</div>
+          <div class="insights">${insHtml}</div>
         </div>
-
-        ${alertsHtml}
-
-        <div class="summary-strip">
-          <div class="sum-card"><div class="sum-num reach">${reachCount}</div><div class="sum-label">Reach schools</div></div>
-          <div class="sum-card"><div class="sum-num match">${matchCount}</div><div class="sum-label">Match schools</div></div>
-          <div class="sum-card"><div class="sum-num safety">${safetyCount}</div><div class="sum-label">Safety schools</div></div>
+        <div class="card-right">
+          <div class="card-pct" style="color:${tc};">${r.final}%</div>
+          <div class="card-pct-label">your chance</div>
+          <a href="university.html?id=${u.id}" class="btn btn-sm btn-ghost" style="margin-top:8px;" onclick="event.stopPropagation()">Full details →</a>
         </div>
-
-        <div class="filter-row">
-          <div class="filter-chip on" data-filter="all" onclick="setFilter('all')">All schools</div>
-          <div class="filter-chip" data-filter="reach"  onclick="setFilter('reach')">Reach</div>
-          <div class="filter-chip" data-filter="match"  onclick="setFilter('match')">Match</div>
-          <div class="filter-chip" data-filter="safety" onclick="setFilter('safety')">Safety</div>
-          <span class="filter-sep">·</span>
-          <div class="filter-chip" data-filter="aid" onclick="setFilter('aid')">Gives intl aid</div>
+      </div>
+      <div class="card-bar"><div class="card-bar-fill" style="width:${r.final}%;background:${tc};"></div></div>
+      <div class="card-metrics">
+        <div class="cm-item"><div class="cm-val">${Math.round(r.scores.sat)}%</div><div class="cm-lbl">SAT/ACT</div>${metricBar(r.scores.sat)}</div>
+        <div class="cm-item"><div class="cm-val">${Math.round(r.scores.gpa)}%</div><div class="cm-lbl">GPA</div>${metricBar(r.scores.gpa)}</div>
+        <div class="cm-item"><div class="cm-val">${Math.round(r.scores.ielts)}%</div><div class="cm-lbl">IELTS</div>${metricBar(r.scores.ielts)}</div>
+        <div class="cm-item"><div class="cm-val">${Math.round(r.scores.essay)}%</div><div class="cm-lbl">Essay</div>${metricBar(r.scores.essay)}</div>
+        <div class="cm-item"><div class="cm-val">${Math.round(r.scores.ec)}%</div><div class="cm-lbl">ECs</div>${metricBar(r.scores.ec)}</div>
+      </div>
+      <div class="card-expand">
+        <div class="expand-grid">
+          <div class="expand-block"><label>Why it fits you</label><p>${u.whyFit}</p></div>
+          <div class="expand-block"><label>Financial aid</label><p>${u.aidNote}</p></div>
+          <div class="expand-block"><label>Median admitted</label><p><strong>GPA ${u.gpa_avg}</strong> · <strong>SAT ${(u.sat_reading_25||0)+(u.sat_math_25||0)}–${(u.sat_reading_75||0)+(u.sat_math_75||0)}</strong><br>You: GPA ${profile.gpa||'—'} · SAT ${profile.sat||'—'}</p></div>
+          <div class="expand-block"><label>Key action</label><p>${u.keyAction}</p></div>
         </div>
-
-        <div class="section-head">
-          <span class="section-label">Your personalized list</span>
-          <span class="section-count" id="schoolCount">${schoolResults.length} schools</span>
+        <div class="expand-actions">
+          <a href="university.html?id=${u.id}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">Full details & radar →</a>
+          <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();saveSchool('${u.id}','${u.name}',${r.final},'${r.tier}')">Save school</button>
         </div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
-        <div id="schoolList"></div>
+function toggleCard(id) {
+  document.getElementById('card-'+id).classList.toggle('open');
+}
 
-        <p style="font-size:12px;color:var(--slate-dim);margin-top:1.5rem;line-height:1.6;">
-          Chance scores are estimates based on your profile and historical international applicant data.
-          They are not guarantees. Actual admission depends on essays, recommendations, and many factors
-          not captured here — but this gives you an honest starting point.
-        </p>
-      `;
+function setFilter(f) {
+  activeFilter = f;
+  document.querySelectorAll('.f-chip').forEach(c => c.classList.toggle('on', c.dataset.f === f));
+  renderCards();
+}
 
-      renderCards();
-    }
+async function saveSchool(id, name, chance, tier) {
+  try {
+    await apiPost('/saved', { session_id: getSessionId(), school_id: id, school_name: name, chance, tier });
+    toast(`${name} saved!`, 'success');
+  } catch { toast('Could not save school', 'error'); }
+}
 
-    init();
-  </script>
-
+init();
+</script>
 </body>
 </html>
