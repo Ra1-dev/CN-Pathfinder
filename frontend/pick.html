@@ -127,7 +127,7 @@
   <div class="pick-header">
     <p class="eyebrow">Step 2 — Build your list</p>
     <h1>Choose your <em>5 schools</em></h1>
-    <p>Pick exactly 5: <strong style="color:var(--red)">1 Dream</strong> (reach), <strong style="color:var(--amber)">2 Target</strong>, and <strong style="color:var(--green)">2 Safe</strong>. A balanced list maximises your options while keeping a realistic shot at your dream school.</p>
+    <p>Pick exactly 5: <strong style="color:var(--red)">1 Dream</strong>, <strong style="color:var(--amber)">2 Target</strong>, and <strong style="color:var(--green)">2 Safe</strong>. Any school can go in any slot — we suggest placements based on your chances but you decide. A ⚠ means the tier doesn't match the slot recommendation.</p>
   </div>
 
   <!-- Slot display -->
@@ -230,11 +230,11 @@ function updateProgress() {
   document.getElementById('progressLabel').textContent = `${filled} of 5 selected`;
 
   const hints = {
-    0:'Select 1 dream school first',
-    1:'Now pick 2 target schools',
-    2:'Pick 1 more target school',
-    3:'Now pick 2 safe schools',
-    4:'Pick 1 more safe school',
+    0:'Add any school to any slot below',
+    1:'4 more to go — add to any remaining slot',
+    2:'3 more to go',
+    3:'2 more to go',
+    4:'1 more school to complete your list',
     5:'List complete! Save to continue →',
   };
   document.getElementById('progressHint').textContent = hints[filled] || '';
@@ -291,11 +291,19 @@ function renderCards() {
     const isSelected = selectedIds.includes(uid);
     const tc = r.tier==='reach'?'var(--red)':r.tier==='target'?'var(--amber)':'var(--green)';
 
-    const dreamDis  = dreamFull  || r.tier !== 'reach';
-    const t1Dis     = t1Full     || r.tier !== 'target';
-    const t2Dis     = t2Full     || r.tier !== 'target';
-    const s1Dis     = s1Full     || r.tier !== 'likely';
-    const s2Dis     = s2Full     || r.tier !== 'likely';
+    // Only disable if slot already full — any school can go in any slot
+    const dreamDis = dreamFull;
+    const t1Dis    = t1Full;
+    const t2Dis    = t2Full;
+    const s1Dis    = s1Full;
+    const s2Dis    = s2Full;
+
+    // Warn if tier mismatch (but still allow)
+    const dreamWarn  = !dreamDis  && r.tier !== 'reach';
+    const t1Warn     = !t1Dis     && r.tier !== 'target';
+    const t2Warn     = !t2Dis     && r.tier !== 'target';
+    const s1Warn     = !s1Dis     && r.tier !== 'likely';
+    const s2Warn     = !s2Dis     && r.tier !== 'likely';
 
     return `<div class="pick-card ${r.tier} ${isSelected?'selected':''}">
       <div class="pc-body">
@@ -306,11 +314,11 @@ function renderCards() {
         <div class="pc-right">
           <div class="pc-pct ${r.tier}">${r.final}%</div>
           <div class="add-btns">
-            <button class="add-slot-btn dream-btn"  ${dreamDis ?'disabled':''} onclick="addToSlot(${realIdx},'dream')">+ Dream</button>
-            <button class="add-slot-btn target-btn" ${t1Dis    ?'disabled':''} onclick="addToSlot(${realIdx},'target_1')">+ Target 1</button>
-            <button class="add-slot-btn target-btn" ${t2Dis    ?'disabled':''} onclick="addToSlot(${realIdx},'target_2')">+ Target 2</button>
-            <button class="add-slot-btn safe-btn"   ${s1Dis    ?'disabled':''} onclick="addToSlot(${realIdx},'safe_1')">+ Safe 1</button>
-            <button class="add-slot-btn safe-btn"   ${s2Dis    ?'disabled':''} onclick="addToSlot(${realIdx},'safe_2')">+ Safe 2</button>
+            <button class="add-slot-btn dream-btn"  ${dreamDis?'disabled':''} title="${dreamWarn?'Lower chance than ideal for dream slot — still allowed':'Add as dream school'}" onclick="addToSlot(${realIdx},'dream')">+ Dream${dreamWarn?' ⚠':''}  </button>
+            <button class="add-slot-btn target-btn" ${t1Dis?'disabled':''} title="${t1Warn?'Mismatch — still allowed':''}" onclick="addToSlot(${realIdx},'target_1')">+ Target 1${t1Warn?' ⚠':''}</button>
+            <button class="add-slot-btn target-btn" ${t2Dis?'disabled':''} title="${t2Warn?'Mismatch — still allowed':''}" onclick="addToSlot(${realIdx},'target_2')">+ Target 2${t2Warn?' ⚠':''}</button>
+            <button class="add-slot-btn safe-btn"   ${s1Dis?'disabled':''} title="${s1Warn?'Higher chance than ideal for safe — still allowed':'Add as safe school'}" onclick="addToSlot(${realIdx},'safe_1')">+ Safe 1${s1Warn?' ⚠':''}</button>
+            <button class="add-slot-btn safe-btn"   ${s2Dis?'disabled':''} title="${s2Warn?'Higher chance than ideal for safe — still allowed':''}" onclick="addToSlot(${realIdx},'safe_2')">+ Safe 2${s2Warn?' ⚠':''}</button>
           </div>
         </div>
       </div>
