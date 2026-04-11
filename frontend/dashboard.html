@@ -42,9 +42,9 @@
 .school-tile:hover { border-color:var(--border-mid); }
 .tile-top { padding:1.25rem 1.25rem .75rem; }
 .tile-slot-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
-.tile-slot-label.dream  { color:var(--red); }
+.tile-slot-label.reach  { color:var(--red); }
 .tile-slot-label.target { color:var(--amber); }
-.tile-slot-label.safe   { color:var(--green); }
+.tile-slot-label.likely { color:var(--green); }
 .tile-name { font-size:15px; font-weight:600; color:var(--white); line-height:1.25; margin-bottom:3px; }
 .tile-meta { font-size:11px; color:var(--slate-dim); }
 .tile-chance { display:flex; align-items:baseline; gap:8px; margin-top:10px; }
@@ -116,11 +116,11 @@
 <script src="api.js"></script>
 <script>
 const SLOT_META = {
-  dream:    { label:'Dream',    color:'dream'  },
-  target_1: { label:'Target 1', color:'target' },
-  target_2: { label:'Target 2', color:'target' },
-  safe_1:   { label:'Safe 1',   color:'safe'   },
-  safe_2:   { label:'Safe 2',   color:'safe'   },
+  dream:    { label:'School 1', color:'reach'  },
+  target_1: { label:'School 2', color:'target' },
+  target_2: { label:'School 3', color:'target' },
+  safe_1:   { label:'School 4', color:'likely' },
+  safe_2:   { label:'School 5', color:'likely' },
 };
 
 const SLOT_ORDER = ['dream','target_1','target_2','safe_1','safe_2'];
@@ -202,7 +202,7 @@ function renderCards(cards) {
         return `
         <div class="school-tile">
           <div class="tile-top">
-            <div class="tile-slot-label ${sm.color}">${sm.label}</div>
+            <div class="tile-slot-label ${c.tier}">${sm.label}</div>
             <div class="tile-name">${c.uni.name}</div>
             <div class="tile-meta">${c.uni.city||''}, ${c.uni.state||''} · ${Math.round((c.uni.acceptance_rate||0)*100)}% admit</div>
             <div class="tile-chance">

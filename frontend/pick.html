@@ -278,7 +278,7 @@ async function confirmList() {
   const slotKeys = ['dream', 'target_1', 'target_2', 'safe_1', 'safe_2'];
 
   try {
-    await apiDelete('/saved/' + getSessionId());
+    try { await apiDelete('/saved/' + getSessionId()); } catch {}
     for (let i = 0; i < 5; i++) {
       const r = selected[i];
       if (!r) continue;
