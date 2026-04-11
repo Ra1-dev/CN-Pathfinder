@@ -9,107 +9,82 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="style.css"/>
 <style>
-.pick-layout { max-width: 1000px; margin: 0 auto; padding: 2.5rem clamp(1.5rem,5vw,3rem) 4rem; }
+.pick-layout{max-width:900px;margin:0 auto;padding:2.5rem clamp(1.5rem,5vw,3rem) 5rem;}
+.pick-header{margin-bottom:2rem;}
+.pick-header h1{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;color:var(--white);margin-bottom:.5rem;}
+.pick-header p{font-size:14px;color:var(--slate);line-height:1.7;max-width:560px;}
 
-.pick-header { margin-bottom: 2rem; }
-.pick-header h1 { font-family:'Playfair Display',serif; font-size:clamp(1.6rem,3vw,2.2rem); font-weight:700; color:var(--white); margin-bottom:.5rem; }
-.pick-header p  { font-size:14px; color:var(--slate); line-height:1.7; max-width:560px; }
-
-/* slots */
-.slots-bar {
-  display:grid; grid-template-columns:repeat(5,1fr); gap:10px;
-  margin-bottom:2rem;
+/* selected shelf at top */
+.shelf{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:8px;
+  margin-bottom:1.75rem;
 }
-.slot {
-  background:var(--bg2); border:1.5px dashed var(--border);
-  border-radius:var(--radius-lg); padding:14px 12px;
-  text-align:center; min-height:110px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  transition:border-color .2s; position:relative;
+.shelf-slot{
+  background:var(--bg3);border:1.5px dashed var(--border);
+  border-radius:12px;padding:12px 10px;text-align:center;
+  min-height:96px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;position:relative;
 }
-.slot.filled { border-style:solid; }
-.slot.dream  { border-color:rgba(224,17,95,0.4); }
-.slot.target { border-color:rgba(224,160,32,0.4); }
-.slot.safe   { border-color:rgba(45,191,123,0.4); }
-.slot-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
-.slot.dream  .slot-label { color:var(--red); }
-.slot.target .slot-label { color:var(--amber); }
-.slot.safe   .slot-label { color:var(--green); }
-.slot-name { font-size:12px; font-weight:500; color:var(--white); line-height:1.3; }
-.slot-pct  { font-size:11px; margin-top:3px; }
-.slot-pct.reach  { color:var(--red); }
-.slot-pct.target { color:var(--amber); }
-.slot-pct.likely { color:var(--green); }
-.slot-empty { font-size:11px; color:var(--slate-dim); }
-.slot-remove {
-  position:absolute; top:6px; right:8px;
-  background:none; border:none; color:var(--slate-dim);
-  font-size:16px; cursor:pointer; line-height:1;
+.shelf-slot.filled{border-style:solid;border-color:var(--border-mid);background:var(--bg2);}
+.shelf-num{font-size:10px;font-weight:700;color:var(--slate-dim);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;}
+.shelf-name{font-size:11px;font-weight:500;color:var(--white);line-height:1.3;}
+.shelf-pct{font-size:11px;margin-top:3px;}
+.shelf-pct.reach{color:var(--red);}
+.shelf-pct.target{color:var(--amber);}
+.shelf-pct.likely{color:var(--green);}
+.shelf-empty{font-size:11px;color:var(--slate-dim);}
+.shelf-rm{position:absolute;top:5px;right:7px;background:none;border:none;color:var(--slate-dim);font-size:16px;cursor:pointer;line-height:1;padding:0;}
+.shelf-rm:hover{color:var(--red);}
+
+/* progress */
+.pick-prog{margin-bottom:1.5rem;}
+.pick-prog-bar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;}
+.pick-prog-fill{height:100%;background:var(--pri);border-radius:2px;transition:width .35s;}
+.pick-prog-label{font-size:12px;color:var(--slate);margin-bottom:6px;display:flex;justify-content:space-between;}
+
+/* filter */
+.pick-filter{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap;}
+
+/* cards */
+.pick-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:14px;margin-bottom:8px;
+  transition:border-color .18s;
 }
-.slot-remove:hover { color:var(--red); }
-
-/* progress bar */
-.pick-progress { margin-bottom:1.75rem; }
-.pick-progress-bar { height:4px; background:var(--bg4); border-radius:2px; overflow:hidden; }
-.pick-progress-fill { height:100%; background:var(--pri); border-radius:2px; transition:width .4s; }
-.pick-progress-label { font-size:12px; color:var(--slate); margin-bottom:6px; display:flex; justify-content:space-between; }
-
-/* filter + cards */
-.pick-filter { display:flex; gap:6px; margin-bottom:1.25rem; flex-wrap:wrap; }
-.pick-card {
-  background:var(--bg2); border:1px solid var(--border);
-  border-radius:var(--radius-lg); margin-bottom:8px;
-  overflow:hidden; transition:border-color .2s;
+.pick-card.reach {border-left:3px solid var(--red);}
+.pick-card.target{border-left:3px solid var(--amber);}
+.pick-card.likely{border-left:3px solid var(--green);}
+.pick-card.added{opacity:.4;pointer-events:none;}
+.pc-body{padding:13px 16px;display:flex;align-items:center;gap:12px;}
+.pc-info{flex:1;}
+.pc-name{font-size:14px;font-weight:600;color:var(--white);margin-bottom:2px;}
+.pc-meta{font-size:11px;color:var(--slate-dim);}
+.pc-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.pc-pct{font-size:20px;font-weight:700;}
+.pc-pct.reach{color:var(--red);}
+.pc-pct.target{color:var(--amber);}
+.pc-pct.likely{color:var(--green);}
+.add-btn-pick{
+  padding:8px 16px;border-radius:8px;
+  background:var(--pri);color:#0A0B14;
+  font-size:13px;font-weight:600;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:background .15s;
+  white-space:nowrap;
 }
-.pick-card.reach  { border-left:3px solid var(--red); }
-.pick-card.target { border-left:3px solid var(--amber); }
-.pick-card.likely { border-left:3px solid var(--green); }
-.pick-card.selected { opacity:.45; pointer-events:none; }
-
-.pc-body { padding:14px 18px; display:flex; align-items:center; gap:14px; }
-.pc-info { flex:1; }
-.pc-name { font-size:14px; font-weight:600; color:var(--white); margin-bottom:2px; }
-.pc-meta { font-size:11px; color:var(--slate-dim); }
-.pc-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-.pc-pct { font-size:20px; font-weight:700; }
-.pc-pct.reach  { color:var(--red); }
-.pc-pct.target { color:var(--amber); }
-.pc-pct.likely { color:var(--green); }
-
-.add-btns { display:flex; flex-direction:column; gap:5px; }
-.add-slot-btn {
-  font-size:11px; font-weight:500; padding:4px 10px;
-  border-radius:6px; border:1px solid; cursor:pointer;
-  background:transparent; font-family:'DM Sans',sans-serif;
-  white-space:nowrap; transition:all .15s;
-}
-.add-slot-btn.dream-btn  { border-color:var(--red);   color:var(--red); }
-.add-slot-btn.target-btn { border-color:var(--amber); color:var(--amber); }
-.add-slot-btn.safe-btn   { border-color:var(--green); color:var(--green); }
-.add-slot-btn:hover { opacity:.8; }
-.add-slot-btn:disabled { opacity:.3; cursor:default; }
+.add-btn-pick:hover{background:var(--pri-deep);color:#fff;}
 
 /* confirm bar */
-.confirm-bar {
-  position:fixed; bottom:0; left:0; right:0;
-  background:var(--bg2); border-top:1px solid var(--border);
-  padding:1rem 2rem; display:flex; align-items:center;
-  justify-content:space-between; gap:1rem; z-index:50;
+.confirm-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--bg2);border-top:1px solid var(--border);
+  padding:1rem 2rem;display:flex;align-items:center;
+  justify-content:space-between;gap:1rem;z-index:50;
 }
-.confirm-slots { display:flex; gap:8px; align-items:center; }
-.cs-dot { width:10px; height:10px; border-radius:50%; border:2px solid; }
-.cs-dot.filled { border-style:solid; }
-.cs-dot.dream-dot  { border-color:var(--red);   }
-.cs-dot.target-dot { border-color:var(--amber);  }
-.cs-dot.safe-dot   { border-color:var(--green);  }
-.cs-dot.dream-dot.filled  { background:var(--red); }
-.cs-dot.target-dot.filled { background:var(--amber); }
-.cs-dot.safe-dot.filled   { background:var(--green); }
-.confirm-label { font-size:13px; color:var(--slate); }
-
-@media(max-width:700px) {
-  .slots-bar { grid-template-columns:1fr 1fr; }
-  .pc-body { flex-wrap:wrap; }
+.confirm-info{font-size:13px;color:var(--slate);}
+.confirm-info strong{color:var(--white);}
+@media(max-width:700px){
+  .shelf{grid-template-columns:repeat(3,1fr);}
+  .pc-body{flex-wrap:wrap;}
 }
 </style>
 </head>
@@ -126,200 +101,164 @@
 <div class="pick-layout">
   <div class="pick-header">
     <p class="eyebrow">Step 2 — Build your list</p>
-    <h1>Choose your <em>5 schools</em></h1>
-    <p>Pick exactly 5: <strong style="color:var(--red)">1 Dream</strong>, <strong style="color:var(--amber)">2 Target</strong>, and <strong style="color:var(--green)">2 Safe</strong>. Any school can go in any slot — we suggest placements based on your chances but you decide. A ⚠ means the tier doesn't match the slot recommendation.</p>
+    <h1>Pick your <em>5 schools</em></h1>
+    <p>Choose any 5 universities from your results. Click <strong>+ Add</strong> on any school. Click × on a selected school to swap it out.</p>
   </div>
 
-  <!-- Slot display -->
-  <div class="slots-bar" id="slotsBar"></div>
+  <!-- shelf showing selected 5 -->
+  <div class="shelf" id="shelf"></div>
 
-  <!-- Progress -->
-  <div class="pick-progress">
-    <div class="pick-progress-label">
-      <span id="progressLabel">0 of 5 selected</span>
-      <span id="progressHint" style="color:var(--pri-soft);">Select 1 dream school first</span>
+  <!-- progress -->
+  <div class="pick-prog">
+    <div class="pick-prog-label">
+      <span id="progLabel">0 of 5 selected</span>
+      <span id="progHint" style="color:var(--pri-soft);"></span>
     </div>
-    <div class="pick-progress-bar"><div class="pick-progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="pick-prog-bar"><div class="pick-prog-fill" id="progFill" style="width:0%"></div></div>
   </div>
 
-  <!-- Filter -->
+  <!-- filter -->
   <div class="pick-filter">
-    <div class="f-chip on" data-f="all"    onclick="setFilter('all')">All schools</div>
+    <div class="f-chip on" data-f="all"    onclick="setFilter('all')">All</div>
     <div class="f-chip"   data-f="reach"   onclick="setFilter('reach')">Reach</div>
     <div class="f-chip"   data-f="target"  onclick="setFilter('target')">Target</div>
-    <div class="f-chip"   data-f="likely"  onclick="setFilter('likely')">Likely / Safe</div>
+    <div class="f-chip"   data-f="likely"  onclick="setFilter('likely')">Likely</div>
   </div>
 
   <div id="cardList"></div>
   <div style="height:80px;"></div>
 </div>
 
-<!-- Confirm bar -->
 <div class="confirm-bar">
-  <div style="display:flex;align-items:center;gap:12px;">
-    <div id="slotDots" style="display:flex;gap:5px;"></div>
-    <span class="confirm-label" id="confirmLabel">Select all 5 schools to continue</span>
-  </div>
+  <div class="confirm-info" id="confirmInfo">Select 5 schools to continue</div>
   <button class="btn btn-primary" id="confirmBtn" disabled onclick="confirmList()">
-    Save my list → Dashboard
+    Save list → Dashboard
   </button>
 </div>
 
 <div id="toast"></div>
 <script src="api.js"></script>
 <script>
-// SLOTS definition
-const SLOT_DEF = [
-  { key:'dream',    label:'Dream',    tier:'reach',  max:1, color:'dream'  },
-  { key:'target_1', label:'Target 1', tier:'target', max:1, color:'target' },
-  { key:'target_2', label:'Target 2', tier:'target', max:1, color:'target' },
-  { key:'safe_1',   label:'Safe 1',   tier:'likely', max:1, color:'safe'   },
-  { key:'safe_2',   label:'Safe 2',   tier:'likely', max:1, color:'safe'   },
-];
-
-let selections = { dream:null, target_1:null, target_2:null, safe_1:null, safe_2:null };
+// Simple array of 5 selected results — index into allResults
+let selected = [null, null, null, null, null]; // always exactly 5 slots
 let allResults = [];
 let activeFilter = 'all';
 
 async function init() {
   const [unis, profile] = await Promise.all([
     getUniversities(),
-    loadProfile().catch(() => null)
+    loadProfile().catch(() => null),
   ]);
   const prof = profile || JSON.parse(localStorage.getItem('uj_profile_local') || '{}');
 
   allResults = unis.map(uni => {
     const { final, scores } = calcChance(uni, prof);
     return { uni, final, scores, tier: getTier(final) };
-  }).sort((a,b) => b.final - a.final);
+  }).sort((a, b) => b.final - a.final);
 
-  // Load any previously saved schools
+  // Restore previously saved
   try {
     const saved = await apiGet('/saved/' + getSessionId());
-    saved.forEach(s => {
-      if (s.slot && selections.hasOwnProperty(s.slot)) {
-        const r = allResults.find(r => String(r.uni.scorecard_id) === s.school_id || r.uni.id === s.school_id);
-        if (r) selections[s.slot] = r;
-      }
+    const slotOrder = ['dream','target_1','target_2','safe_1','safe_2'];
+    saved.sort((a,b) => slotOrder.indexOf(a.slot) - slotOrder.indexOf(b.slot));
+    saved.forEach((s, i) => {
+      if (i >= 5) return;
+      const r = allResults.find(r =>
+        String(r.uni.scorecard_id) === String(s.school_id) ||
+        r.uni.name === s.school_name
+      );
+      if (r) selected[i] = r;
     });
   } catch {}
 
-  renderSlots();
+  renderShelf();
   renderCards();
 }
 
-function renderSlots() {
-  const bar = document.getElementById('slotsBar');
-  bar.innerHTML = SLOT_DEF.map(s => {
-    const sel = selections[s.key];
-    return `<div class="slot ${s.color} ${sel?'filled':''}">
-      <div class="slot-label">${s.label}</div>
-      ${sel ? `
-        <div class="slot-name">${sel.uni.name.split(' ').slice(0,3).join(' ')}</div>
-        <div class="slot-pct ${sel.tier}">${sel.final}%</div>
-        <button class="slot-remove" onclick="removeSlot('${s.key}')">×</button>
-      ` : `<div class="slot-empty">Empty</div>`}
-    </div>`;
-  }).join('');
-  updateProgress();
+function getSelectedUniKeys() {
+  return selected.filter(Boolean).map(r => uniKey(r.uni));
 }
 
-function updateProgress() {
-  const filled = Object.values(selections).filter(Boolean).length;
-  document.getElementById('progressFill').style.width = (filled/5*100)+'%';
-  document.getElementById('progressLabel').textContent = `${filled} of 5 selected`;
-
-  const hints = {
-    0:'Add any school to any slot below',
-    1:'4 more to go — add to any remaining slot',
-    2:'3 more to go',
-    3:'2 more to go',
-    4:'1 more school to complete your list',
-    5:'List complete! Save to continue →',
-  };
-  document.getElementById('progressHint').textContent = hints[filled] || '';
-
-  // slot dots
-  document.getElementById('slotDots').innerHTML = SLOT_DEF.map(s => {
-    const filled = selections[s.key];
-    return `<div class="cs-dot ${s.color}-dot ${filled?'filled':''}"></div>`;
-  }).join('');
-
-  const allFilled = filled === 5;
-  document.getElementById('confirmBtn').disabled = !allFilled;
-  document.getElementById('confirmLabel').textContent = allFilled
-    ? 'All 5 schools selected — ready!'
-    : 'Select all 5 schools to continue';
-
-  renderCards();
+function uniKey(uni) {
+  // Use name as the definitive unique key since IDs vary
+  return uni.name;
 }
 
-function removeSlot(key) {
-  selections[key] = null;
-  renderSlots();
-}
+function addSchool(idx) {
+  const r = allResults[idx];
+  if (!r) return;
+  const key = uniKey(r.uni);
 
-function canAdd(slotKey) {
-  return selections[slotKey] === null;
-}
-
-function addToSlot(resultIdx, slotKey) {
-  const r = allResults[resultIdx];
-  // Check it's not already in another slot
-  for (const [k, v] of Object.entries(selections)) {
-    if (v && (v.uni.scorecard_id === r.uni.scorecard_id || v.uni.id === r.uni.id)) {
-      toast('Already in your list', 'error'); return;
-    }
+  // Don't add if already selected
+  if (getSelectedUniKeys().includes(key)) {
+    toast('Already in your list', 'error');
+    return;
   }
-  selections[slotKey] = r;
-  renderSlots();
+
+  // Find first empty slot
+  const emptyIdx = selected.findIndex(s => s === null);
+  if (emptyIdx === -1) {
+    toast('List is full — remove a school first', 'error');
+    return;
+  }
+
+  selected[emptyIdx] = r;
+  renderShelf();
+  renderCards();
+}
+
+function removeSlot(slotIdx) {
+  selected[slotIdx] = null;
+  renderShelf();
+  renderCards();
+}
+
+function renderShelf() {
+  const bar = document.getElementById('shelf');
+  bar.innerHTML = selected.map((r, i) => `
+    <div class="shelf-slot ${r ? 'filled' : ''}">
+      <div class="shelf-num">School ${i + 1}</div>
+      ${r ? `
+        <div class="shelf-name">${r.uni.name.split(' ').slice(0,3).join(' ')}</div>
+        <div class="shelf-pct ${r.tier}">${r.final}%</div>
+        <button class="shelf-rm" onclick="removeSlot(${i})">×</button>
+      ` : `<div class="shelf-empty">Empty</div>`}
+    </div>`).join('');
+
+  const count = selected.filter(Boolean).length;
+  document.getElementById('progFill').style.width = (count / 5 * 100) + '%';
+  document.getElementById('progLabel').textContent = `${count} of 5 selected`;
+  document.getElementById('progHint').textContent = count === 5 ? 'Ready to save!' : `${5 - count} more to go`;
+
+  const ready = count === 5;
+  document.getElementById('confirmBtn').disabled = !ready;
+  document.getElementById('confirmInfo').innerHTML = ready
+    ? '<strong>5 schools selected</strong> — save your list'
+    : `Select <strong>${5 - count}</strong> more school${5 - count !== 1 ? 's' : ''} to continue`;
 }
 
 function renderCards() {
-  const filtered = activeFilter === 'all' ? allResults : allResults.filter(r => r.tier === activeFilter);
-  const selectedIds = Object.values(selections).filter(Boolean).map(r => r.uni.scorecard_id || r.uni.id);
+  const selectedKeys = getSelectedUniKeys();
+  const filtered = activeFilter === 'all'
+    ? allResults
+    : allResults.filter(r => r.tier === activeFilter);
 
-  const dreamFull  = !canAdd('dream');
-  const t1Full     = !canAdd('target_1');
-  const t2Full     = !canAdd('target_2');
-  const s1Full     = !canAdd('safe_1');
-  const s2Full     = !canAdd('safe_2');
-
-  document.getElementById('cardList').innerHTML = filtered.map((r, i) => {
+  document.getElementById('cardList').innerHTML = filtered.map((r, _) => {
     const realIdx = allResults.indexOf(r);
-    const uid = r.uni.scorecard_id || r.uni.id;
-    const isSelected = selectedIds.includes(uid);
-    const tc = r.tier==='reach'?'var(--red)':r.tier==='target'?'var(--amber)':'var(--green)';
+    const isAdded = selectedKeys.includes(uniKey(r.uni));
+    const tc = r.tier === 'reach' ? 'var(--red)' : r.tier === 'target' ? 'var(--amber)' : 'var(--green)';
 
-    // Only disable if slot already full — any school can go in any slot
-    const dreamDis = dreamFull;
-    const t1Dis    = t1Full;
-    const t2Dis    = t2Full;
-    const s1Dis    = s1Full;
-    const s2Dis    = s2Full;
-
-    // Warn if tier mismatch (but still allow)
-    const dreamWarn  = !dreamDis  && r.tier !== 'reach';
-    const t1Warn     = !t1Dis     && r.tier !== 'target';
-    const t2Warn     = !t2Dis     && r.tier !== 'target';
-    const s1Warn     = !s1Dis     && r.tier !== 'likely';
-    const s2Warn     = !s2Dis     && r.tier !== 'likely';
-
-    return `<div class="pick-card ${r.tier} ${isSelected?'selected':''}">
+    return `<div class="pick-card ${r.tier} ${isAdded ? 'added' : ''}">
       <div class="pc-body">
         <div class="pc-info">
           <div class="pc-name">${r.uni.name}</div>
-          <div class="pc-meta">${r.uni.city||''}, ${r.uni.state||''} · ${Math.round((r.uni.acceptance_rate||0)*100)}% admit rate · GPA avg ${r.uni.gpa_avg||'—'}</div>
+          <div class="pc-meta">${r.uni.city || ''}, ${r.uni.state || ''} · ${Math.round((r.uni.acceptance_rate || 0) * 100)}% admit · GPA avg ${r.uni.gpa_avg || '—'}</div>
         </div>
         <div class="pc-right">
           <div class="pc-pct ${r.tier}">${r.final}%</div>
-          <div class="add-btns">
-            <button class="add-slot-btn dream-btn"  ${dreamDis?'disabled':''} title="${dreamWarn?'Lower chance than ideal for dream slot — still allowed':'Add as dream school'}" onclick="addToSlot(${realIdx},'dream')">+ Dream${dreamWarn?' ⚠':''}  </button>
-            <button class="add-slot-btn target-btn" ${t1Dis?'disabled':''} title="${t1Warn?'Mismatch — still allowed':''}" onclick="addToSlot(${realIdx},'target_1')">+ Target 1${t1Warn?' ⚠':''}</button>
-            <button class="add-slot-btn target-btn" ${t2Dis?'disabled':''} title="${t2Warn?'Mismatch — still allowed':''}" onclick="addToSlot(${realIdx},'target_2')">+ Target 2${t2Warn?' ⚠':''}</button>
-            <button class="add-slot-btn safe-btn"   ${s1Dis?'disabled':''} title="${s1Warn?'Higher chance than ideal for safe — still allowed':'Add as safe school'}" onclick="addToSlot(${realIdx},'safe_1')">+ Safe 1${s1Warn?' ⚠':''}</button>
-            <button class="add-slot-btn safe-btn"   ${s2Dis?'disabled':''} title="${s2Warn?'Higher chance than ideal for safe — still allowed':''}" onclick="addToSlot(${realIdx},'safe_2')">+ Safe 2${s2Warn?' ⚠':''}</button>
-          </div>
+          <button class="add-btn-pick" onclick="addSchool(${realIdx})" ${isAdded ? 'disabled' : ''}>
+            ${isAdded ? '✓ Added' : '+ Add'}
+          </button>
         </div>
       </div>
     </div>`;
@@ -335,28 +274,30 @@ function setFilter(f) {
 async function confirmList() {
   document.getElementById('confirmBtn').disabled = true;
   document.getElementById('confirmBtn').textContent = 'Saving...';
+
+  const slotKeys = ['dream', 'target_1', 'target_2', 'safe_1', 'safe_2'];
+
   try {
-    // Clear existing saved schools first
     await apiDelete('/saved/' + getSessionId());
-    // Save each slot
-    for (const [slot, r] of Object.entries(selections)) {
+    for (let i = 0; i < 5; i++) {
+      const r = selected[i];
       if (!r) continue;
       await apiPost('/saved', {
-        session_id: getSessionId(),
-        school_id:  String(r.uni.scorecard_id || r.uni.id),
+        session_id:  getSessionId(),
+        school_id:   String(r.uni.scorecard_id || r.uni.id || r.uni.name),
         school_name: r.uni.name,
-        chance:     r.final,
-        tier:       r.tier,
-        slot:       slot,
-        scores:     r.scores,
+        chance:      r.final,
+        tier:        r.tier,
+        slot:        slotKeys[i],
+        scores:      r.scores,
       });
     }
     toast('List saved!', 'success');
-    setTimeout(() => window.location.href = 'dashboard.html', 800);
-  } catch(e) {
-    toast('Error saving list', 'error');
+    setTimeout(() => window.location.href = 'dashboard.html', 700);
+  } catch (e) {
+    toast('Error saving — please try again', 'error');
     document.getElementById('confirmBtn').disabled = false;
-    document.getElementById('confirmBtn').textContent = 'Save my list → Dashboard';
+    document.getElementById('confirmBtn').textContent = 'Save list → Dashboard';
   }
 }
 
