@@ -30,17 +30,10 @@ except Exception as e:
 
 app = FastAPI(title="UniJourney API", version="1.0.0")
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "*")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        FRONTEND_URL,
-        "http://localhost:3000",
-        "http://127.0.0.1:5500",
-        "https://uni-journey-app.vercel.app",
-        "https://uni-journey-app.vercel.app",
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
