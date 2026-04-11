@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 import os, json, pathlib
@@ -11,19 +10,42 @@ import models, schemas
 load_dotenv()
 Base.metadata.create_all(bind=engine)
 
+# Auto-migrate: add columns added after initial deploy
+from sqlalchemy import text, inspect
+def run_migrations():
+    with engine.connect() as conn:
+        inspector = inspect(engine)
+        cols = [c["name"] for c in inspector.get_columns("saved_schools")]
+        if "slot" not in cols:
+            conn.execute(text("ALTER TABLE saved_schools ADD COLUMN slot VARCHAR"))
+            conn.commit()
+        if "scores" not in cols:
+            conn.execute(text("ALTER TABLE saved_schools ADD COLUMN scores JSON"))
+            conn.commit()
+
+try:
+    run_migrations()
+except Exception as e:
+    print(f"Migration note: {e}")
+
 app = FastAPI(title="UniJourney API", version="1.0.0")
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "*")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_URL, "http://localhost:3000", "http://127.0.0.1:5500",
-                   "https://uni-journey-app.vercel.app"],
+    allow_origins=[
+        FRONTEND_URL,
+        "http://localhost:3000",
+        "http://127.0.0.1:5500",
+        "https://uni-journey-app.vercel.app",
+        "https://uni-journey-app.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ── Serve universities JSON ────────────────────────────────
+# ── Universities JSON ─────────────────────────────────────
 DATA_FILE = pathlib.Path(__file__).parent / "data" / "universities_complete.json"
 
 @app.get("/universities")
@@ -31,7 +53,7 @@ def get_universities():
     if DATA_FILE.exists():
         with open(DATA_FILE) as f:
             return json.load(f)
-    raise HTTPException(status_code=404, detail="University data not found. Upload universities_complete.json to backend/data/")
+    raise HTTPException(status_code=404, detail="universities_complete.json not found in backend/data/")
 
 # ── Health ────────────────────────────────────────────────
 @app.get("/")
@@ -86,24 +108,20 @@ def get_saved(session_id: str, db: Session = Depends(get_db)):
 
 @app.post("/saved", response_model=schemas.SavedSchoolResponse)
 def save_school(data: schemas.SavedSchoolCreate, db: Session = Depends(get_db)):
-    # Replace if same slot already exists for this session
+    # Remove existing entry for same slot if exists
     if data.slot:
-        existing_slot = db.query(models.SavedSchool).filter(
+        db.query(models.SavedSchool).filter(
             models.SavedSchool.session_id == data.session_id,
             models.SavedSchool.slot == data.slot,
-        ).first()
-        if existing_slot:
-            db.delete(existing_slot)
-            db.commit()
+        ).delete()
+        db.commit()
 
-    # Also remove if same school already saved
-    existing = db.query(models.SavedSchool).filter(
+    # Remove duplicate school entry if exists
+    db.query(models.SavedSchool).filter(
         models.SavedSchool.session_id == data.session_id,
         models.SavedSchool.school_id  == data.school_id,
-    ).first()
-    if existing:
-        db.delete(existing)
-        db.commit()
+    ).delete()
+    db.commit()
 
     school = models.SavedSchool(**data.model_dump())
     db.add(school)
@@ -111,15 +129,13 @@ def save_school(data: schemas.SavedSchoolCreate, db: Session = Depends(get_db)):
     db.refresh(school)
     return school
 
+# NOTE: more specific route must come BEFORE the generic one
 @app.delete("/saved/{session_id}/{school_id}")
-def remove_saved(session_id: str, school_id: str, db: Session = Depends(get_db)):
-    school = db.query(models.SavedSchool).filter(
+def remove_saved_school(session_id: str, school_id: str, db: Session = Depends(get_db)):
+    db.query(models.SavedSchool).filter(
         models.SavedSchool.session_id == session_id,
         models.SavedSchool.school_id  == school_id,
-    ).first()
-    if not school:
-        raise HTTPException(status_code=404, detail="Not found")
-    db.delete(school)
+    ).delete()
     db.commit()
     return {"deleted": True}
 
