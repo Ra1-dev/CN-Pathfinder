@@ -142,7 +142,9 @@
   <a href="index.html" class="logo"><span class="logo-dot"></span>UniJourney</a>
   <ul class="nav-links">
     <li><a href="results.html" style="color:var(--white);">My list</a></li>
-    <li><a href="profile.html">Edit profile</a></li>
+    <li><a href="pick.html">Build my list</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="profile.html">Profile</a></li>
   </ul>
   <a href="profile.html" class="btn btn-primary btn-sm">Edit profile</a>
 </nav>
@@ -252,6 +254,7 @@ function renderResults() {
   const alertsHtml = alerts.map(a => `<div class="alert alert-${a.type}"><span class="alert-dot"></span><div>${a.text}</div></div>`).join('');
 
   document.getElementById('pageContent').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;"><div style="display:flex;gap:10px;"><a href="pick.html" class="btn btn-primary">Build my list of 5 →</a><a href="dashboard.html" class="btn btn-ghost">Dashboard</a></div></div>
     <div class="results-header">
       <h1>Your <em>personalized</em> school list</h1>
       <div class="results-count" id="resultsCount">${filtered.length} schools · sorted by your chance</div>

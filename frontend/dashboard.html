@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UniJourney — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.dash-layout { max-width:1100px; margin:0 auto; padding:2.5rem clamp(1.5rem,5vw,3rem) 4rem; }
+
+/* header */
+.dash-header { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:2rem; }
+.dash-header h1 { font-family:'Playfair Display',serif; font-size:clamp(1.6rem,3vw,2.2rem); font-weight:700; color:var(--white); }
+.dash-header h1 em { font-style:italic; color:var(--pri-soft); }
+
+/* profile strip */
+.profile-strip {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--radius-lg); padding:1.25rem 1.5rem;
+  display:flex; align-items:center; gap:1.5rem;
+  flex-wrap:wrap; margin-bottom:2rem;
+}
+.pa { width:46px; height:46px; border-radius:50%; background:var(--pri-dim); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; color:var(--pri-soft); flex-shrink:0; }
+.pname { font-size:15px; font-weight:600; color:var(--white); }
+.pmeta { font-size:12px; color:var(--slate); margin-top:2px; }
+.pstats { display:flex; gap:16px; margin-left:auto; }
+.ps { text-align:center; }
+.ps-v { font-size:16px; font-weight:600; color:var(--white); }
+.ps-l { font-size:10px; color:var(--slate-dim); margin-top:1px; }
+
+/* school grid */
+.schools-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:1rem; margin-bottom:2rem; }
+
+.school-tile {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:var(--radius-lg); overflow:hidden;
+  transition:border-color .2s;
+}
+.school-tile:hover { border-color:var(--border-mid); }
+.tile-top { padding:1.25rem 1.25rem .75rem; }
+.tile-slot-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
+.tile-slot-label.dream  { color:var(--red); }
+.tile-slot-label.target { color:var(--amber); }
+.tile-slot-label.safe   { color:var(--green); }
+.tile-name { font-size:15px; font-weight:600; color:var(--white); line-height:1.25; margin-bottom:3px; }
+.tile-meta { font-size:11px; color:var(--slate-dim); }
+.tile-chance { display:flex; align-items:baseline; gap:8px; margin-top:10px; }
+.tile-pct { font-size:28px; font-weight:700; font-family:'Playfair Display',serif; }
+.tile-pct.reach  { color:var(--red); }
+.tile-pct.target { color:var(--amber); }
+.tile-pct.likely { color:var(--green); }
+.tile-tier { font-size:11px; }
+
+/* metric bars inside tile */
+.tile-metrics { padding:.75rem 1.25rem 1rem; border-top:1px solid var(--border); }
+.tm-row { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+.tm-row:last-child { margin-bottom:0; }
+.tm-lbl { font-size:11px; color:var(--slate); width:80px; flex-shrink:0; }
+.tm-track { flex:1; height:3px; background:var(--bg4); border-radius:2px; overflow:hidden; }
+.tm-fill  { height:100%; border-radius:2px; }
+.tm-val   { font-size:11px; color:var(--slate-dim); width:28px; text-align:right; }
+
+.tile-actions { padding:.75rem 1.25rem 1.25rem; display:flex; gap:8px; }
+
+/* empty state */
+.empty-state { text-align:center; padding:5rem 2rem; }
+.empty-state h2 { font-family:'Playfair Display',serif; font-size:1.8rem; color:var(--white); margin-bottom:.75rem; }
+.empty-state p  { color:var(--slate); margin-bottom:2rem; line-height:1.7; }
+
+/* next steps */
+.next-steps { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem; margin-top:2rem; }
+.ns-title { font-size:13px; font-weight:600; color:var(--white); margin-bottom:1rem; }
+.ns-row {
+  display:flex; align-items:center; gap:12px;
+  padding:10px 0; border-bottom:1px solid var(--border);
+}
+.ns-row:last-child { border-bottom:none; }
+.ns-num { width:24px; height:24px; border-radius:50%; background:var(--pri-dim); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--pri); flex-shrink:0; }
+.ns-text { flex:1; font-size:13px; color:var(--white); }
+.ns-date { font-size:11px; color:var(--slate-dim); }
+
+@media(max-width:600px) { .pstats { display:none; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo"><span class="logo-dot"></span>UniJourney</a>
+  <ul class="nav-links">
+    <li><a href="results.html">All results</a></li>
+    <li><a href="pick.html">Edit list</a></li>
+    <li><a href="profile.html">Profile</a></li>
+  </ul>
+  <a href="pick.html" class="btn btn-ghost btn-sm">Edit my list</a>
+</nav>
+
+<div class="dash-layout">
+  <div class="dash-header">
+    <div>
+      <p class="eyebrow">Your dashboard</p>
+      <h1>Application <em>command center</em></h1>
+    </div>
+    <a href="pick.html" class="btn btn-ghost btn-sm">Change selections</a>
+  </div>
+
+  <div id="profileStrip"></div>
+  <div id="pageContent">
+    <div style="text-align:center;padding:4rem;color:var(--slate);">Loading your dashboard...</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="api.js"></script>
+<script>
+const SLOT_META = {
+  dream:    { label:'Dream',    color:'dream'  },
+  target_1: { label:'Target 1', color:'target' },
+  target_2: { label:'Target 2', color:'target' },
+  safe_1:   { label:'Safe 1',   color:'safe'   },
+  safe_2:   { label:'Safe 2',   color:'safe'   },
+};
+
+const SLOT_ORDER = ['dream','target_1','target_2','safe_1','safe_2'];
+
+async function init() {
+  const [profile, saved, unis] = await Promise.all([
+    loadProfile().catch(() => null),
+    apiGet('/saved/'+getSessionId()).catch(() => []),
+    getUniversities(),
+  ]);
+  const prof = profile || JSON.parse(localStorage.getItem('uj_profile_local') || '{}');
+
+  // Profile strip
+  renderProfile(prof);
+
+  if (!saved || saved.length === 0) {
+    document.getElementById('pageContent').innerHTML = `
+      <div class="empty-state">
+        <h2>No schools saved yet</h2>
+        <p>Go back to your results and pick 1 dream, 2 target, and 2 safe schools to build your personalised application list.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <a href="pick.html" class="btn btn-primary btn-lg">Build my list →</a>
+          <a href="results.html" class="btn btn-ghost btn-lg">View all results</a>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // Sort by slot order
+  const ordered = SLOT_ORDER.map(s => saved.find(x => x.slot === s)).filter(Boolean);
+  const uniMap  = Object.fromEntries(unis.map(u => [String(u.scorecard_id), u]));
+
+  // Recalculate scores live for display
+  const cards = ordered.map(s => {
+    const uni = uniMap[s.school_id] || unis.find(u => u.id === s.school_id) || { name: s.school_name, scorecard_id: s.school_id };
+    const { final, scores } = calcChance(uni, prof);
+    return { saved: s, uni, final, scores, tier: getTier(final) };
+  });
+
+  renderCards(cards);
+  renderNextSteps(cards, prof);
+}
+
+function renderProfile(prof) {
+  const initials = ((prof.first_name||'?')[0]+(prof.last_name||'')[0]||'?').toUpperCase();
+  document.getElementById('profileStrip').innerHTML = `
+    <div class="profile-strip">
+      <div class="pa">${initials}</div>
+      <div>
+        <div class="pname">${prof.first_name||'Student'}${prof.last_name?' '+prof.last_name:''}</div>
+        <div class="pmeta">${[prof.grade,prof.country,prof.major].filter(Boolean).join(' · ')||'Complete your profile for better results'}</div>
+      </div>
+      <div class="pstats">
+        <div class="ps"><div class="ps-v">${prof.sat||prof.act?prof.sat||('ACT '+prof.act):'—'}</div><div class="ps-l">SAT/ACT</div></div>
+        <div class="ps"><div class="ps-v">${prof.gpa?parseFloat(prof.gpa).toFixed(1):'—'}</div><div class="ps-l">GPA</div></div>
+        <div class="ps"><div class="ps-v">${prof.ielts?parseFloat(prof.ielts).toFixed(1):'—'}</div><div class="ps-l">IELTS</div></div>
+        <div class="ps"><div class="ps-v">${(prof.activities||[]).filter(Boolean).length}</div><div class="ps-l">Activities</div></div>
+      </div>
+      <a href="profile.html" class="btn btn-ghost btn-sm" style="margin-left:auto;">Edit profile</a>
+    </div>`;
+}
+
+function renderCards(cards) {
+  const metricColors = { sat:'#9FACFB', gpa:'#E0A020', ielts:'#2DBF7B', essay:'#B8C4FF', ec:'#E0115F' };
+  const metricLabels = { sat:'SAT/ACT', gpa:'GPA', ielts:'IELTS', essay:'Essay', ec:'Activities' };
+
+  document.getElementById('pageContent').innerHTML = `
+    <div class="schools-grid">
+      ${cards.map(c => {
+        const sm = SLOT_META[c.saved.slot] || { label:'School', color:'safe' };
+        const barsHtml = Object.entries(metricColors).map(([k,col]) => {
+          const v = Math.round(c.scores[k]||0);
+          return `<div class="tm-row">
+            <div class="tm-lbl">${metricLabels[k]}</div>
+            <div class="tm-track"><div class="tm-fill" style="width:${v}%;background:${col};"></div></div>
+            <div class="tm-val">${v}%</div>
+          </div>`;
+        }).join('');
+        return `
+        <div class="school-tile">
+          <div class="tile-top">
+            <div class="tile-slot-label ${sm.color}">${sm.label}</div>
+            <div class="tile-name">${c.uni.name}</div>
+            <div class="tile-meta">${c.uni.city||''}, ${c.uni.state||''} · ${Math.round((c.uni.acceptance_rate||0)*100)}% admit</div>
+            <div class="tile-chance">
+              <div class="tile-pct ${c.tier}">${c.final}%</div>
+              <span class="badge-${c.tier}">${c.tier}</span>
+            </div>
+          </div>
+          <div class="tile-metrics">${barsHtml}</div>
+          <div class="tile-actions">
+            <a href="roadmap.html?id=${c.uni.scorecard_id||c.uni.id}&slot=${c.saved.slot}" class="btn btn-primary btn-sm">View roadmap →</a>
+            <a href="university.html?id=${c.uni.id||c.uni.scorecard_id}" class="btn btn-ghost btn-sm">Details</a>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div id="nextSteps"></div>`;
+}
+
+function renderNextSteps(cards, prof) {
+  // Build a master deadline list from all 5 schools
+  const now = new Date();
+  const season = '2025-26';
+
+  // Find the earliest deadline across all schools
+  const allDeadlines = [];
+  cards.forEach(c => {
+    const dl = c.uni.deadlines || {};
+    if (dl.ed)  allDeadlines.push({ name:`${c.uni.name.split(' ')[0]} ED`,  date:dl.ed,  school:c.uni.name });
+    if (dl.ea)  allDeadlines.push({ name:`${c.uni.name.split(' ')[0]} EA`,  date:dl.ea,  school:c.uni.name });
+    if (dl.rd)  allDeadlines.push({ name:`${c.uni.name.split(' ')[0]} RD`,  date:dl.rd,  school:c.uni.name });
+  });
+  allDeadlines.sort((a,b) => new Date(a.date) - new Date(b.date));
+
+  const steps = [
+    { text:'Complete your profile — fill in GPA, SAT, IELTS and activities', date:'ASAP', done: !!(prof.gpa && (prof.sat||prof.act)) },
+    { text:'Draft your Common App personal statement (650 words)', date:'Sep 15, 2025', done: (prof.essay||'').length > 200 },
+    { text:'Request 2 recommendation letters from teachers', date:'Sep 20, 2025', done:false },
+    { text:'Finalize all school supplement essays', date:'Oct 15, 2025', done:false },
+    ...(allDeadlines.slice(0,3).map(d => ({
+      text:`Submit ${d.name} application — ${d.school}`,
+      date: formatDate(d.date),
+      done: false,
+    }))),
+  ];
+
+  document.getElementById('nextSteps').innerHTML = `
+    <div class="next-steps">
+      <div class="ns-title">📋 Your application checklist — ${season} cycle</div>
+      ${steps.map((s,i) => `
+        <div class="ns-row">
+          <div class="ns-num" style="${s.done?'background:var(--green-dim);color:var(--green);':''}">${s.done?'✓':i+1}</div>
+          <div class="ns-text" style="${s.done?'text-decoration:line-through;color:var(--slate);':''}">${s.text}</div>
+          <div class="ns-date">${s.date}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso+'T12:00:00');
+  return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+init();
+</script>
+</body>
+</html>

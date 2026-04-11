@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────
 const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:8000'
-  : 'https://unijourney-app.onrender.com'
+  : 'https://unijourney-api.onrender.com'; // ← update after deploy
 
 // ─────────────────────────────────────────────────────────────
 // SESSION — UUID stored in localStorage
@@ -201,11 +201,15 @@ const UNIVERSITIES = [
   { id:'umich', name:'University of Michigan', emoji:'💛', city:'Ann Arbor', state:'MI', type:'Public', acceptance_rate:0.178, sat_reading_25:680, sat_reading_75:760, sat_math_25:700, sat_math_75:790, act_25:32, act_75:35, gpa_avg:3.88, ielts_min:6.5, deadlines:{ ea:'2024-11-01', rd:'2025-02-01' }, requirements:{ essay:true, supplement:'Why Michigan essay', recs:'1 counselor', interview:'Not offered', fee:75 }, whyFit:'Top-10 in most majors. Ross Business School and CSE are nationally ranked powerhouses.', keyAction:'Write a specific "Why Michigan" essay referencing programs, professors, or opportunities.', aidNote:'Very limited merit aid for international students. Mostly need-based for domestic.' },
 ];
 
-// Helper: get universities from JSON file (production) or embedded data (fallback)
+// Helper: get universities — backend API first, then local JSON, then hardcoded fallback
 async function getUniversities() {
   try {
-    const res = await fetch('../data/universities_complete.json');
-    if (res.ok) return res.json();
+    const data = await apiGet('/universities');
+    if (Array.isArray(data) && data.length > 0) return data;
+  } catch {}
+  try {
+    const res = await fetch('data/universities_complete.json');
+    if (res.ok) { const d = await res.json(); if (d.length > 0) return d; }
   } catch {}
   return UNIVERSITIES;
 }

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 
@@ -31,6 +31,8 @@ class SavedSchoolCreate(BaseModel):
     school_name: str
     chance:      int
     tier:        str
+    slot:        Optional[str] = None
+    scores:      Optional[Dict[str, Any]] = None
 
 
 class SavedSchoolResponse(SavedSchoolCreate):
