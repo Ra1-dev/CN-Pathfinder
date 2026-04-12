@@ -230,10 +230,17 @@ async function init() {
   if (dl.ea)  dlItems.push({type:'EA',  name:'Early Action (non-binding)',  date:dl.ea,  note:'Hear back by Dec/Jan'});
   if (dl.rd)  dlItems.push({type:'RD',  name:'Regular Decision',            date:dl.rd,  note:'Decision by April 1'});
 
+  // Roll deadline forward until it's in the future
+  const normDeadline = iso => {
+    if (!iso) return iso;
+    let d = new Date(iso + 'T12:00:00');
+    const now = new Date();
+    while (d < now) { d.setFullYear(d.getFullYear() + 1); }
+    return d.toISOString().split('T')[0];
+  };
   const fmt = iso => {
     if (!iso) return '—';
-    const d = new Date(iso+'T12:00:00');
-    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    return new Date(normDeadline(iso) + 'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   };
 
   document.getElementById('uniLayout').innerHTML = `
@@ -360,7 +367,7 @@ async function init() {
           <div class="section-heading" style="margin-top:1.5rem;">Application timeline</div>
           <div class="timeline">
             <div class="tl-item tl-done">
-              <div class="tl-period">Now — September 15</div>
+              <div class="tl-period">Now — September 2026</div>
               <div class="tl-desc">Draft your Common App personal statement. Request recommendation letters from teachers and counselor.</div>
             </div>
             <div class="tl-item tl-current">

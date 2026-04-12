@@ -231,7 +231,7 @@ function renderCards(cards) {
 function renderNextSteps(cards, prof) {
   // Build a master deadline list from all 5 schools
   const now = new Date();
-  const season = '2025-26';
+  const season = '2026-27';
 
   // Find the earliest deadline across all schools
   const allDeadlines = [];
@@ -245,9 +245,9 @@ function renderNextSteps(cards, prof) {
 
   const steps = [
     { text:'Complete your profile — fill in GPA, SAT, IELTS and activities', date:'ASAP', done: !!(prof.gpa && (prof.sat||prof.act)) },
-    { text:'Draft your Common App personal statement (650 words)', date:'Sep 15, 2025', done: (prof.essay||'').length > 200 },
-    { text:'Request 2 recommendation letters from teachers', date:'Sep 20, 2025', done:false },
-    { text:'Finalize all school supplement essays', date:'Oct 15, 2025', done:false },
+    { text:'Draft your Common App personal statement (650 words)', date:'Sep 15, 2026', done: (prof.essay||'').length > 200 },
+    { text:'Request 2 recommendation letters from teachers', date:'Sep 20, 2026', done:false },
+    { text:'Finalize all school supplement essays', date:'Oct 15, 2026', done:false },
     ...(allDeadlines.slice(0,3).map(d => ({
       text:`Submit ${d.name} application — ${d.school}`,
       date: formatDate(d.date),

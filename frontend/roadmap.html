@@ -201,7 +201,14 @@ body{background:var(--bg);}
 <script src="api.js"></script>
 <script>
 const NOW=new Date();
-function normYear(iso){if(!iso)return iso;const d=new Date(iso+'T12:00:00');if(d.getFullYear()<2025)return iso.replace(/^\d{4}/,'2025');return iso;}
+function normYear(iso){
+  if(!iso) return iso;
+  let d = new Date(iso + 'T12:00:00');
+  const now = new Date();
+  // Roll forward year by year until the date is in the future
+  while(d < now) { d.setFullYear(d.getFullYear() + 1); }
+  return d.toISOString().split('T')[0];
+}
 function fmt(iso){if(!iso)return'—';return new Date(normYear(iso)+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 function daysUntil(iso){if(!iso)return null;return Math.round((new Date(normYear(iso)+'T12:00:00')-NOW)/86400000);}
 
@@ -254,7 +261,7 @@ async function init(){
     {emoji:'✍️',label:'Personal statement',sub:hasEssay?'✓ Done':hasDraft?'~ Draft':'⚠ Not started',
      status:hasEssay?'done':hasDraft?'current':'current',
      title:'Write your personal statement',
-     desc:hasEssay?'Essay saved. Get feedback and write a polished final version.':hasDraft?'You have a draft — keep writing. Aim for 600+ words.':'Choose a moment that reveals your character. First draft due to yourself by Sep 1.',
+     desc:hasEssay?'Essay saved. Get feedback and write a polished final version.':hasDraft?'You have a draft — keep writing. Aim for 600+ words.':'Choose a moment that reveals your character. First draft due to yourself by Sep 1, 2026.',
      tags:[{l:'Personal Statement',c:'metric-essay'},{l:'650 words',c:''}]},
     ...(uni.requirements?.supplement&&uni.requirements.supplement!=='None'?[{
       emoji:'📄',label:`${uni.name.split(' ')[0]} essay`,sub:'Supplement',status:'current',
@@ -277,9 +284,9 @@ async function init(){
       title:`Regular Decision — ${fmt(rdDate)}`,
       desc:`Submit complete application with all materials confirmed. Check your Common App the day before.`,
       tags:[{l:'Regular Decision',c:''},{l:daysRD!=null?(daysRD<0?'Passed':daysRD+' days'):' ',c:'deadline'}]}]:[]),
-    {emoji:'🎯',label:'Decision day',sub:'Apr 2026',status:'locked',
+    {emoji:'🎯',label:'Decision day',sub:'Apr 2027',status:'locked',
      title:'Receive your decision',
-     desc:'ED: December. EA/RD: March–April 2026. Compare financial aid packages. Commit by May 1, 2026.',
+     desc:'ED: December. EA/RD: March–April 2027. Compare financial aid packages. Commit by May 1, 2027.',
      tags:[{l:'Decision period',c:''},{l:'Commit by May 1',c:''}]},
   ];
 
