@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UniJourney — Streak & Leaderboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<style>
+.streak-layout{max-width:680px;margin:0 auto;padding:2rem clamp(1rem,4vw,2rem) 4rem;}
+
+/* ── Top podium ── */
+.podium-section{margin-bottom:2rem;}
+.section-eyebrow{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--pri-soft);margin-bottom:.5rem;}
+.section-heading{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--white);margin-bottom:1.25rem;}
+.section-heading em{font-style:italic;color:var(--pri-soft);}
+
+.podium-row{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-bottom:1.5rem;}
+.podium-item{display:flex;flex-direction:column;align-items:center;gap:0;}
+.podium-avatar{
+  width:56px;height:56px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;border:3px solid;margin-bottom:6px;
+  position:relative;
+}
+.podium-avatar.gold  {border-color:#F5C518;box-shadow:0 4px 16px rgba(245,197,24,0.4);}
+.podium-avatar.silver{border-color:#C0C0C0;box-shadow:0 4px 12px rgba(192,192,192,0.3);}
+.podium-avatar.bronze{border-color:#CD7F32;box-shadow:0 4px 12px rgba(205,127,50,0.3);}
+.podium-crown{position:absolute;top:-14px;font-size:16px;}
+.podium-name{font-size:12px;font-weight:600;color:var(--white);text-align:center;max-width:72px;line-height:1.2;}
+.podium-xp{font-size:11px;color:var(--slate);text-align:center;margin-top:2px;}
+.podium-block{
+  border-radius:10px 10px 0 0;width:72px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;
+}
+.podium-block.first {height:80px;background:linear-gradient(180deg,rgba(245,197,24,0.3),rgba(245,197,24,0.1));border:1px solid rgba(245,197,24,0.3);color:#F5C518;}
+.podium-block.second{height:60px;background:linear-gradient(180deg,rgba(192,192,192,0.2),rgba(192,192,192,0.05));border:1px solid rgba(192,192,192,0.2);color:#C0C0C0;}
+.podium-block.third {height:44px;background:linear-gradient(180deg,rgba(205,127,50,0.2),rgba(205,127,50,0.05));border:1px solid rgba(205,127,50,0.2);color:#CD7F32;}
+
+/* ── Full leaderboard ── */
+.leaderboard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:2rem;}
+.lb-row{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 16px;border-bottom:1px solid var(--border);
+  transition:background .15s;
+}
+.lb-row:last-child{border-bottom:none;}
+.lb-row:hover{background:var(--bg3);}
+.lb-row.you{background:var(--pri-dim);border-left:3px solid var(--pri);}
+.lb-row.you:hover{background:rgba(159,172,251,0.18);}
+.lb-rank{font-size:14px;font-weight:700;color:var(--slate-dim);width:24px;text-align:center;flex-shrink:0;}
+.lb-rank.top{color:var(--white);}
+.lb-avatar{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;border:2px solid var(--border);
+}
+.lb-info{flex:1;min-width:0;}
+.lb-name{font-size:13px;font-weight:600;color:var(--white);display:flex;align-items:center;gap:6px;}
+.lb-you-badge{font-size:9px;background:var(--pri);color:#0A0B14;padding:1px 6px;border-radius:4px;font-weight:700;}
+.lb-sub{font-size:11px;color:var(--slate-dim);margin-top:1px;}
+.lb-right{text-align:right;flex-shrink:0;}
+.lb-xp{font-size:14px;font-weight:700;color:var(--white);}
+.lb-xp-lbl{font-size:9px;color:var(--slate-dim);}
+.lb-milestones{display:flex;gap:3px;margin-top:3px;justify-content:flex-end;}
+.lb-ms{width:7px;height:7px;border-radius:50%;}
+.lb-ms.done{background:var(--green);}
+.lb-ms.todo{background:var(--bg4);}
+
+/* ── Hype banner ── */
+.hype-banner{
+  border-radius:var(--radius-lg);padding:1.5rem;
+  margin-bottom:2rem;text-align:center;
+  background:linear-gradient(135deg,rgba(159,172,251,0.12),rgba(159,172,251,0.05));
+  border:1px solid var(--border-mid);
+  position:relative;overflow:hidden;
+}
+.hype-banner::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 0%,rgba(159,172,251,0.08),transparent 60%);
+}
+.hype-emoji{font-size:2.5rem;display:block;margin-bottom:.5rem;}
+.hype-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:.5rem;}
+.hype-title em{font-style:italic;color:var(--pri-soft);}
+.hype-sub{font-size:13px;color:var(--slate);line-height:1.65;max-width:420px;margin:0 auto;}
+.hype-gap{
+  display:inline-block;margin-top:1rem;
+  background:var(--pri-dim);border:1px solid var(--border-mid);
+  border-radius:8px;padding:6px 14px;
+  font-size:13px;color:var(--pri-soft);font-weight:500;
+}
+
+/* ── Milestone stats ── */
+.milestone-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:2rem;}
+.ms-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;}
+.ms-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;}
+.ms-card-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--slate-dim);}
+.ms-card-icon{font-size:18px;}
+.ms-big{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--white);line-height:1;}
+.ms-sub{font-size:11px;color:var(--slate);margin-top:4px;}
+.ms-mini-bar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:10px;}
+.ms-mini-fill{height:100%;border-radius:2px;transition:width .6s ease;}
+
+/* ── Your stats ── */
+.stats-section{margin-bottom:2rem;}
+.stat-row{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:13px 16px;
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:8px;
+}
+.stat-ico{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.stat-info{flex:1;}
+.stat-label{font-size:11px;font-weight:500;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;}
+.stat-value{font-size:18px;font-weight:700;color:var(--white);margin-top:1px;}
+.stat-note{font-size:11px;color:var(--slate-dim);margin-top:1px;}
+.stat-badge{flex-shrink:0;}
+.stat-badge span{font-size:11px;padding:3px 8px;border-radius:5px;font-weight:500;}
+.good{background:var(--green-dim);color:var(--green);}
+.warn{background:var(--amber-dim);color:var(--amber);}
+.bad {background:var(--red-dim);  color:var(--red);}
+
+@media(max-width:500px){
+  .podium-row{gap:6px;}
+  .podium-block{width:60px;}
+  .podium-avatar{width:48px;height:48px;}
+  .milestone-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo"><span class="logo-dot"></span>UniJourney</a>
+  <ul class="nav-links">
+    <li><a href="dashboard.html">Dashboard</a></li>
+    <li><a href="results.html">My results</a></li>
+  </ul>
+  <a href="dashboard.html" class="btn btn-ghost btn-sm">Dashboard</a>
+</nav>
+
+<div class="streak-layout">
+
+  <!-- Leaderboard header -->
+  <div class="podium-section">
+    <div class="section-eyebrow">This week's leaderboard</div>
+    <div class="section-heading">Who's <em>ahead of you</em></div>
+
+    <!-- Top 3 podium -->
+    <div class="podium-row" id="podiumRow"></div>
+  </div>
+
+  <!-- Full board -->
+  <div class="leaderboard" id="leaderboard"></div>
+
+  <!-- Hype message -->
+  <div class="hype-banner" id="hypeBanner"></div>
+
+  <!-- Milestones across all schools -->
+  <div class="section-eyebrow" style="margin-bottom:.5rem;">Your progress</div>
+  <div class="section-heading" style="margin-bottom:1.25rem;">Milestones <em>completed</em></div>
+  <div class="milestone-grid" id="milestoneGrid"></div>
+
+  <!-- Your stats -->
+  <div class="stats-section">
+    <div class="section-eyebrow" style="margin-bottom:.5rem;">Your scores on file</div>
+    <div class="section-heading" style="margin-bottom:1.25rem;">Academic <em>profile</em></div>
+    <div id="statRows"></div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+<script src="api.js"></script>
+<script>
+// ── Hardcoded competitors (friends) ──────────────────────
+const COMPETITORS = [
+  { name:'Arman K.',     emoji:'👨‍💻', country:'🇰🇿', xp:1400, milestones:7, sat:1480, gpa:3.9, ielts:7.5, essays:2, desc:'Applying CS — MIT, CMU, Stanford' },
+  { name:'Sofia L.',     emoji:'👩‍🔬', country:'🇷🇺', xp:1200, milestones:6, sat:1520, gpa:3.95, ielts:8.0, essays:3, desc:'Pre-Med — Johns Hopkins, Penn' },
+  { name:'James W.',     emoji:'👨‍💼', country:'🇬🇧', xp:1000, milestones:5, sat:1390, gpa:3.75, ielts:7.0, essays:1, desc:'Business — Wharton, Ross' },
+  { name:'Yuki T.',      emoji:'👩‍🎨', country:'🇯🇵', xp:850,  milestones:4, sat:1350, gpa:3.8,  ielts:7.0, essays:2, desc:'Design & CS — CMU, Northwestern' },
+  { name:'Carlos M.',    emoji:'👨‍🚀', country:'🇧🇷', xp:700,  milestones:3, sat:1310, gpa:3.6,  ielts:6.5, essays:1, desc:'Engineering — Purdue, Georgia Tech' },
+  { name:'Aisha N.',     emoji:'👩‍💻', country:'🇳🇬', xp:600,  milestones:3, sat:1280, gpa:3.55, ielts:6.5, essays:1, desc:'Data Science — Michigan, UWash' },
+  { name:'Priya S.',     emoji:'👩‍🔬', country:'🇮🇳', xp:450,  milestones:2, sat:1240, gpa:3.5,  ielts:6.5, essays:0, desc:'Pre-Med — Indiana, Purdue' },
+];
+
+// Total possible milestones per school × 5 schools (approx 9 steps each)
+const TOTAL_POSSIBLE = 45;
+
+async function init() {
+  const [profile, saved] = await Promise.all([
+    loadProfile().catch(() => null),
+    apiGet('/saved/' + getSessionId()).catch(() => []),
+  ]);
+  const prof = profile || JSON.parse(localStorage.getItem('uj_profile_local') || '{}');
+
+  // Calculate user's milestones
+  const hasGpa   = !!prof.gpa;
+  const hasSat   = !!(prof.sat || prof.act);
+  const hasIelts = !!prof.ielts;
+  const hasEssay = (prof.essay || '').length > 200;
+  const hasDraft = (prof.essay || '').length > 50;
+  const actCount = (prof.activities || []).filter(Boolean).length;
+  const savedCount = saved.length;
+
+  // Each milestone = 1 point
+  const milestonesDone = [
+    hasGpa, hasSat, hasIelts,
+    actCount >= 2, actCount >= 4,
+    hasDraft, hasEssay,
+    savedCount > 0, savedCount >= 5,
+    prof.major, prof.country, prof.grade,
+  ].filter(Boolean).length;
+
+  const userXp = milestonesDone * 100;
+  const initials = ((prof.first_name||'?')[0]+(prof.last_name||'')[0]||'').toUpperCase() || '?';
+  const userName = prof.first_name ? `${prof.first_name}${prof.last_name?' '+prof.last_name[0]+'.':''}` : 'You';
+
+  // Build full leaderboard including user
+  const everyone = [
+    ...COMPETITORS,
+    { name: userName, emoji: initials, country: '', xp: userXp, milestones: milestonesDone,
+      sat: prof.sat || (prof.act ? `ACT ${prof.act}` : 0),
+      gpa: prof.gpa, ielts: prof.ielts, essays: hasEssay ? 1 : 0,
+      desc: `${prof.major || 'Undecided'} — ${savedCount} schools saved`, isYou: true },
+  ].sort((a, b) => b.xp - a.xp);
+
+  const userRank = everyone.findIndex(e => e.isYou) + 1;
+  const userEntry = everyone.find(e => e.isYou);
+  const aheadOf = everyone[userRank - 2]; // person just above
+  const gapXp   = aheadOf ? aheadOf.xp - userXp : 0;
+
+  // ── Podium top 3 ──
+  const top3 = everyone.slice(0, 3);
+  const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean); // 2nd, 1st, 3rd
+  const podiumClass = ['second','first','third'];
+  const podiumHeight = [60,80,44];
+  const medalEmoji = ['🥈','🥇','🥉'];
+  const crownShow = [false, true, false];
+
+  document.getElementById('podiumRow').innerHTML = podiumOrder.map((p, i) => {
+    const realRank = everyone.indexOf(p) + 1;
+    return `<div class="podium-item">
+      <div class="podium-avatar ${podiumClass[i]}">
+        ${crownShow[i] ? '<div class="podium-crown">👑</div>' : ''}
+        ${p.emoji.length <= 2 && p.emoji.match(/\p{Emoji}/u) ? p.emoji : `<span style="font-size:14px;font-weight:700;color:var(--white);">${p.emoji}</span>`}
+        ${p.isYou ? '<div style="position:absolute;bottom:-4px;right:-4px;font-size:8px;background:var(--pri);color:#0A0B14;padding:1px 4px;border-radius:3px;font-weight:700;">YOU</div>' : ''}
+      </div>
+      <div class="podium-name">${p.name}</div>
+      <div class="podium-xp">${p.xp} XP</div>
+      <div class="podium-block ${podiumClass[i]}">${medalEmoji[i]}</div>
+    </div>`;
+  }).join('');
+
+  // ── Full leaderboard ──
+  document.getElementById('leaderboard').innerHTML = everyone.map((p, i) => {
+    const rank = i + 1;
+    const dots = Array.from({length:12}).map((_,j)=>`<div class="lb-ms ${j<p.milestones?'done':'todo'}"></div>`).join('');
+    return `<div class="lb-row ${p.isYou ? 'you' : ''}">
+      <div class="lb-rank ${rank<=3?'top':''}">${rank<=3?['🥇','🥈','🥉'][rank-1]:rank}</div>
+      <div class="lb-avatar" style="background:var(--bg3);">
+        ${p.emoji.length<=2&&/\p{Emoji}/u.test(p.emoji)?p.emoji:`<span style="font-size:13px;font-weight:700;color:var(--pri-soft);">${p.emoji}</span>`}
+      </div>
+      <div class="lb-info">
+        <div class="lb-name">
+          ${p.name} ${p.country}
+          ${p.isYou ? '<span class="lb-you-badge">YOU</span>' : ''}
+        </div>
+        <div class="lb-sub">${p.desc||''}</div>
+      </div>
+      <div class="lb-right">
+        <div class="lb-xp">${p.xp} <span style="font-size:10px;color:var(--slate-dim);">XP</span></div>
+        <div class="lb-milestones">${dots}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // ── Hype message ──
+  const hypeMessages = [
+    { rank: 1,  emoji:'🏆', title:'You\'re <em>leading the pack!</em>', sub:'Everyone is chasing you. Keep grinding — your lead is not guaranteed. One missed deadline and they catch up.' },
+    { rank: 2,  emoji:'🔥', title:'So <em>close to #1!</em>', sub:`Only ${gapXp} XP separates you from the top. Complete one more milestone today and you take the lead.` },
+    { rank: 3,  emoji:'⚡', title:'You\'re in the <em>top 3!</em>', sub:`${aheadOf?.name||'They'} is only ${gapXp} XP ahead. Don't let up — the top two spots are within reach this week.` },
+    { rank: 99, emoji:'🚀', title:'Time to <em>level up!</em>', sub:`You're ranked #${userRank}. ${aheadOf?.name||'The person ahead'} has ${gapXp} XP on you. Complete your SAT, IELTS, and essay milestones to close the gap fast.` },
+  ];
+  const hype = userRank === 1 ? hypeMessages[0] : userRank === 2 ? hypeMessages[1] : userRank === 3 ? hypeMessages[2] : hypeMessages[3];
+  document.getElementById('hypeBanner').innerHTML = `
+    <span class="hype-emoji">${hype.emoji}</span>
+    <div class="hype-title">${hype.title}</div>
+    <div class="hype-sub">${hype.sub}</div>
+    ${userRank > 1 && gapXp > 0 ? `<div class="hype-gap">⚡ Complete 1 milestone = +100 XP · Only ${Math.ceil(gapXp/100)} milestone${Math.ceil(gapXp/100)!==1?'s':''} to pass ${aheadOf?.name||'them'}</div>` : ''}
+  `;
+
+  // ── Milestone cards ──
+  const totalMilestonesAcross = milestonesDone * (savedCount || 1);
+  document.getElementById('milestoneGrid').innerHTML = `
+    <div class="ms-card">
+      <div class="ms-card-header"><div class="ms-card-title">Milestones done</div><div class="ms-card-icon">✅</div></div>
+      <div class="ms-big">${milestonesDone}</div>
+      <div class="ms-sub">out of ~${TOTAL_POSSIBLE} possible</div>
+      <div class="ms-mini-bar"><div class="ms-mini-fill" style="width:${Math.round(milestonesDone/TOTAL_POSSIBLE*100)}%;background:var(--green);"></div></div>
+    </div>
+    <div class="ms-card">
+      <div class="ms-card-header"><div class="ms-card-title">XP earned</div><div class="ms-card-icon">⚡</div></div>
+      <div class="ms-big">${userXp}</div>
+      <div class="ms-sub">Rank #${userRank} of ${everyone.length}</div>
+      <div class="ms-mini-bar"><div class="ms-mini-fill" style="width:${Math.round(userXp/everyone[0].xp*100)}%;background:var(--pri);"></div></div>
+    </div>
+    <div class="ms-card">
+      <div class="ms-card-header"><div class="ms-card-title">Schools saved</div><div class="ms-card-icon">🏫</div></div>
+      <div class="ms-big">${savedCount}</div>
+      <div class="ms-sub">of 5 target schools</div>
+      <div class="ms-mini-bar"><div class="ms-mini-fill" style="width:${Math.round(savedCount/5*100)}%;background:var(--amber);"></div></div>
+    </div>
+    <div class="ms-card">
+      <div class="ms-card-header"><div class="ms-card-title">Profile strength</div><div class="ms-card-icon">💪</div></div>
+      <div class="ms-big">${Math.round(milestonesDone/12*100)}%</div>
+      <div class="ms-sub">${milestonesDone < 6 ? 'Keep going!' : milestonesDone < 10 ? 'Good progress' : 'Strong profile'}</div>
+      <div class="ms-mini-bar"><div class="ms-mini-fill" style="width:${Math.round(milestonesDone/12*100)}%;background:var(--pri);"></div></div>
+    </div>`;
+
+  // ── Stats ──
+  const sat   = prof.sat || (prof.act ? null : null);
+  const act   = prof.act;
+  const gpa   = prof.gpa ? parseFloat(prof.gpa) : null;
+  const ielts = prof.ielts ? parseFloat(prof.ielts) : null;
+  const essayLen = (prof.essay||'').trim().split(/\s+/).filter(Boolean).length;
+
+  const satBadge = !sat && !act ? 'bad' : (sat||0) >= 1400 || (act||0) >= 32 ? 'good' : (sat||0) >= 1200 || (act||0) >= 26 ? 'warn' : 'bad';
+  const gpaBadge = !gpa ? 'bad' : gpa >= 3.7 ? 'good' : gpa >= 3.3 ? 'warn' : 'bad';
+  const ieltsBadge = !ielts ? 'bad' : ielts >= 7.0 ? 'good' : ielts >= 6.5 ? 'warn' : 'bad';
+  const essayBadge = essayLen > 400 ? 'good' : essayLen > 100 ? 'warn' : 'bad';
+  const actBadge = actCount >= 4 ? 'good' : actCount >= 2 ? 'warn' : 'bad';
+
+  const badgeLabel = {good:'Strong',warn:'Moderate',bad:'Missing'};
+
+  document.getElementById('statRows').innerHTML = [
+    { ico:'📝', bg:'rgba(159,172,251,0.1)', label:'SAT Score', value: sat ? sat.toString() : act ? `ACT ${act}` : '—', note: sat ? 'out of 1600' : act ? 'out of 36' : 'Not entered yet', badge: satBadge },
+    { ico:'📊', bg:'rgba(224,160,32,0.1)',  label:'GPA (unweighted)', value: gpa ? gpa.toFixed(2) : '—', note: gpa ? 'out of 4.0' : 'Not entered yet', badge: gpaBadge },
+    { ico:'🌐', bg:'rgba(45,191,123,0.1)',  label:'IELTS Band Score', value: ielts ? ielts.toFixed(1) : '—', note: ielts ? 'Overall band' : 'Not entered yet', badge: ieltsBadge },
+    { ico:'✍️', bg:'rgba(184,196,255,0.1)', label:'Personal Statement', value: essayLen > 0 ? `${essayLen} words` : '—', note: essayLen > 400 ? 'Ready to submit' : essayLen > 0 ? 'Draft in progress' : 'Not started', badge: essayBadge },
+    { ico:'🏅', bg:'rgba(224,17,95,0.1)',   label:'Activities', value: actCount.toString(), note: actCount > 0 ? `${actCount} activity${actCount!==1?'s':''} listed` : 'None added yet', badge: actBadge },
+  ].map(s => `
+    <div class="stat-row">
+      <div class="stat-ico" style="background:${s.bg};">${s.ico}</div>
+      <div class="stat-info">
+        <div class="stat-label">${s.label}</div>
+        <div class="stat-value">${s.value}</div>
+        <div class="stat-note">${s.note}</div>
+      </div>
+      <div class="stat-badge"><span class="${s.badge}">${badgeLabel[s.badge]}</span></div>
+    </div>`).join('');
+}
+
+init();
+</script>
+</body>
+</html>

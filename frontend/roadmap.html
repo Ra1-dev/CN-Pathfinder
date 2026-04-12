@@ -12,7 +12,7 @@
 body{background:var(--bg);}
 .road-wrap{max-width:680px;margin:0 auto;padding:0 clamp(1rem,4vw,2rem) 4rem;}
 
-.road-hero{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;display:flex;align-items:center;gap:1.25rem;margin-bottom:1.5rem;}
+.road-hero{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;display:flex;align-items:center;gap:1.25rem;margin-bottom:1.25rem;}
 .rh-logo{width:52px;height:52px;border-radius:13px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
 .rh-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--white);}
 .rh-meta{font-size:11px;color:var(--slate);margin-top:2px;}
@@ -20,13 +20,13 @@ body{background:var(--bg);}
 .rh-pct{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;line-height:1;}
 .rh-lbl{font-size:10px;color:var(--slate);margin-top:2px;}
 
-.xp-bar{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 16px;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px;}
+.xp-bar-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 16px;margin-bottom:1.25rem;display:flex;align-items:center;gap:10px;}
 .xp-label{font-size:13px;font-weight:600;color:var(--pri);flex-shrink:0;}
 .xp-track{flex:1;height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;}
-.xp-fill{height:100%;background:var(--pri);border-radius:4px;transition:width .8s ease;}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--pri-deep),var(--pri));border-radius:4px;transition:width .8s ease;}
 .xp-count{font-size:11px;color:var(--slate-dim);flex-shrink:0;}
 
-.stats-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:2rem;display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:center;}
+.stats-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:center;}
 .sb-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);}
 .sb-row:last-child{border-bottom:none;}
 .sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
@@ -35,76 +35,126 @@ body{background:var(--bg);}
 .sb-fill2{height:100%;border-radius:2px;}
 .sb-pct{font-size:10px;color:var(--slate);width:26px;text-align:right;flex-shrink:0;}
 
-.start-banner{background:var(--pri-dim);border:1px solid var(--border-mid);border-radius:var(--radius-lg);padding:.875rem 1.25rem;display:flex;align-items:center;gap:10px;margin-bottom:2rem;}
+.start-banner{background:var(--pri-dim);border:1px solid var(--border-mid);border-radius:var(--radius-lg);padding:.875rem 1.25rem;display:flex;align-items:center;gap:10px;margin-bottom:0;}
 .sb-icon{font-size:24px;flex-shrink:0;}
 .sb-txt strong{display:block;font-size:13px;font-weight:600;color:var(--white);margin-bottom:1px;}
 .sb-txt span{font-size:11px;color:var(--slate);}
 
-/* ── Gamified path ── */
-.game-path{position:relative;display:flex;flex-direction:column;align-items:center;}
-.path-segment{display:flex;flex-direction:column;align-items:center;width:100%;}
+/* ═══════════════════════════════════
+   GAME PATH SECTION
+═══════════════════════════════════ */
+.path-section{
+  position:relative;
+  /* Grass/road background */
+  background: linear-gradient(180deg,
+    #0A0B14 0%,
+    #0D1220 8%,
+    #0a1a0e 15%,
+    #0d2010 30%,
+    #0a1a0e 45%,
+    #0d2010 60%,
+    #0a1a0e 75%,
+    #0d2010 90%,
+    #0A0B14 100%
+  );
+  border-radius:20px;
+  border:1px solid rgba(45,191,123,0.15);
+  overflow:hidden;
+  padding:2rem 0 2rem;
+  margin-top:1.5rem;
+}
 
-/* connector line */
-.connector{width:3px;height:36px;border-radius:2px;margin:0 auto;}
-.conn-done{background:var(--green);}
-.conn-active{background:linear-gradient(to bottom,var(--green),var(--pri));}
-.conn-future{background:var(--bg4);}
+/* Subtle grass texture dots */
+.path-section::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle,rgba(45,191,123,0.06) 1px,transparent 1px),
+    radial-gradient(circle,rgba(45,191,123,0.04) 1px,transparent 1px);
+  background-size:24px 24px,40px 40px;
+  background-position:0 0,12px 12px;
+  pointer-events:none;
+}
 
-/* node positioning — zigzag */
-.node-row{display:flex;width:100%;align-items:center;position:relative;}
-.node-row.left {justify-content:flex-start;padding-left:24px;}
-.node-row.right{justify-content:flex-end;padding-right:24px;}
+/* SVG road */
+.road-svg{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:0;
+}
+
+.game-path{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;
+  align-items:center;
+  gap:0;
+  padding:0 24px;
+}
+
+/* node row */
+.node-row{display:flex;width:100%;align-items:center;position:relative;margin:0;}
+.node-row.left  {justify-content:flex-start;padding-left:30px;}
+.node-row.right {justify-content:flex-end;padding-right:30px;}
 .node-row.center{justify-content:center;}
 
-/* connector positioned relative to node */
-.connector.left {margin-left:60px;margin-right:auto;}
-.connector.right{margin-right:60px;margin-left:auto;}
-.connector.center{margin:0 auto;}
+/* spacer between nodes */
+.node-spacer{height:52px;width:100%;position:relative;}
 
-.gnode{display:flex;flex-direction:column;align-items:center;cursor:pointer;width:80px;}
+.gnode{display:flex;flex-direction:column;align-items:center;cursor:pointer;width:90px;position:relative;z-index:2;}
 .gnode-circle{
-  width:68px;height:68px;border-radius:50%;
+  width:72px;height:72px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:26px;position:relative;
-  transition:transform .18s;border:3px solid transparent;
+  font-size:28px;position:relative;
+  transition:transform .18s,box-shadow .18s;
+  border:4px solid transparent;
 }
 .gnode-circle:hover{transform:scale(1.1);}
-.gnode-circle:active{transform:scale(0.96);}
-.gnode-circle.done   {background:var(--green);border-color:#1a9959;box-shadow:0 4px 14px rgba(45,191,123,0.35);}
-.gnode-circle.current{background:var(--pri);border-color:var(--pri-deep);box-shadow:0 4px 18px rgba(159,172,251,0.45);animation:gpulse 2s infinite;}
-.gnode-circle.urgent {background:var(--red);border-color:#a80d47;box-shadow:0 4px 14px rgba(224,17,95,0.35);}
-.gnode-circle.locked {background:var(--bg4);border-color:var(--bg5);}
-@keyframes gpulse{0%,100%{box-shadow:0 4px 18px rgba(159,172,251,0.45);}50%{box-shadow:0 4px 28px rgba(159,172,251,0.7);}}
+.gnode-circle:active{transform:scale(0.95);}
 
-.gcheck{position:absolute;bottom:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:#fff;color:var(--green);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--green);}
-.gnode-lbl{font-size:11px;font-weight:600;color:var(--white);margin-top:5px;text-align:center;line-height:1.3;}
-.gnode-sub{font-size:9px;color:var(--slate-dim);text-align:center;margin-top:1px;}
+.gnode-circle.done   {background:var(--green);border-color:#1a9959;box-shadow:0 6px 20px rgba(45,191,123,0.5);}
+.gnode-circle.current{background:var(--pri);border-color:var(--pri-deep);box-shadow:0 6px 24px rgba(159,172,251,0.55);animation:gpulse 2s infinite;}
+.gnode-circle.urgent {background:var(--red);border-color:#a80d47;box-shadow:0 6px 20px rgba(224,17,95,0.5);}
+.gnode-circle.locked {background:#1a1c2e;border-color:#2a2c40;box-shadow:0 2px 8px rgba(0,0,0,0.4);}
+
+@keyframes gpulse{
+  0%,100%{box-shadow:0 6px 24px rgba(159,172,251,0.55);}
+  50%{box-shadow:0 6px 36px rgba(159,172,251,0.85),0 0 0 8px rgba(159,172,251,0.08);}
+}
+
+.gcheck{position:absolute;bottom:-5px;right:-5px;width:22px;height:22px;border-radius:50%;background:white;color:var(--green);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--green);box-shadow:0 2px 6px rgba(0,0,0,0.3);}
+.lock-icon{position:absolute;bottom:-5px;right:-5px;width:22px;height:22px;border-radius:50%;background:var(--bg4);color:var(--slate-dim);font-size:11px;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg5);}
+
+.gnode-lbl{font-size:11px;font-weight:700;color:var(--white);margin-top:7px;text-align:center;line-height:1.3;text-shadow:0 1px 4px rgba(0,0,0,0.8);}
+.gnode-sub{font-size:9px;color:rgba(255,255,255,0.5);text-align:center;margin-top:1px;}
 
 /* destination */
-.destination{text-align:center;margin-top:8px;padding:2rem 1rem;background:var(--bg2);border:1px solid var(--border-mid);border-radius:var(--radius-lg);position:relative;overflow:hidden;}
-.dest-glow{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(159,172,251,0.1) 0%,transparent 70%);pointer-events:none;}
-.dest-building{font-size:72px;display:block;margin-bottom:10px;filter:drop-shadow(0 6px 20px rgba(159,172,251,0.25));}
-.dest-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--pri-soft);margin-bottom:5px;}
-.dest-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--white);margin-bottom:5px;}
+.destination{
+  position:relative;z-index:2;
+  text-align:center;padding:2.5rem 1rem 2rem;
+  background:linear-gradient(180deg,transparent,rgba(159,172,251,0.06) 40%,rgba(159,172,251,0.03));
+}
+.dest-glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(159,172,251,0.12) 0%,transparent 65%);pointer-events:none;}
+.dest-building{font-size:80px;display:block;margin-bottom:10px;filter:drop-shadow(0 8px 28px rgba(159,172,251,0.4));animation:float 4s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.dest-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--pri-soft);margin-bottom:6px;}
+.dest-name{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--white);margin-bottom:5px;}
 .dest-sub{font-size:12px;color:var(--slate);}
 
 /* popup */
-.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:199;display:none;}
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;display:none;}
 .popup-overlay.open{display:block;}
 .node-popup{
   position:fixed;bottom:0;left:0;right:0;z-index:200;
   background:var(--bg2);border-top:1px solid var(--border-mid);
   border-radius:20px 20px 0 0;
-  padding:1.25rem 1.5rem 2rem;
-  transform:translateY(100%);transition:transform .28s ease;
+  padding:1.25rem 1.5rem 2.5rem;
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.3,1);
   max-width:680px;margin:0 auto;
 }
 .node-popup.open{transform:translateY(0);}
-.pop-handle{width:36px;height:3px;background:var(--bg5);border-radius:2px;margin:0 auto 1rem;}
-.pop-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.6rem;}
+.pop-handle{width:36px;height:4px;background:var(--bg5);border-radius:2px;margin:0 auto 1rem;}
+.pop-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem;}
 .pop-title{font-size:15px;font-weight:600;color:var(--white);}
 .pop-close{background:none;border:none;color:var(--slate);font-size:22px;cursor:pointer;line-height:1;padding:0;}
-.pop-desc{font-size:13px;color:var(--slate);line-height:1.65;margin-bottom:.875rem;}
+.pop-desc{font-size:13px;color:var(--slate);line-height:1.7;margin-bottom:1rem;}
 .pop-tags{display:flex;gap:6px;flex-wrap:wrap;}
 .ptag{font-size:11px;padding:3px 9px;border-radius:5px;background:var(--bg3);border:1px solid var(--border);color:var(--slate);}
 .ptag.metric-sat  {background:rgba(159,172,251,.1);color:#9FACFB;border-color:rgba(159,172,251,.2);}
@@ -141,45 +191,39 @@ body{background:var(--bg);}
   <div class="pop-desc" id="popDesc"></div>
   <div class="pop-tags" id="popTags"></div>
 </div>
-
 <div id="toast"></div>
 <script src="api.js"></script>
 <script>
-const NOW = new Date();
+const NOW=new Date();
 function normYear(iso){if(!iso)return iso;const d=new Date(iso+'T12:00:00');if(d.getFullYear()<2025)return iso.replace(/^\d{4}/,'2025');return iso;}
 function fmt(iso){if(!iso)return'—';return new Date(normYear(iso)+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
 function daysUntil(iso){if(!iso)return null;return Math.round((new Date(normYear(iso)+'T12:00:00')-NOW)/86400000);}
 
 async function init(){
   const params=new URLSearchParams(window.location.search);
-  const uniId=params.get('id'), slot=params.get('slot')||'dream';
-  const [unis,profile]=await Promise.all([getUniversities(),loadProfile().catch(()=>null)]);
+  const uniId=params.get('id'),slot=params.get('slot')||'dream';
+  const[unis,profile]=await Promise.all([getUniversities(),loadProfile().catch(()=>null)]);
   const prof=profile||JSON.parse(localStorage.getItem('uj_profile_local')||'{}');
   const uni=unis.find(u=>String(u.scorecard_id)===uniId||u.id===uniId||String(u.id)===uniId);
   if(!uni){document.getElementById('roadContent').innerHTML=`<div style="text-align:center;padding:4rem;"><p style="color:var(--slate);margin-bottom:1rem;">University not found.</p><a href="dashboard.html" class="btn btn-primary">← Dashboard</a></div>`;return;}
 
-  document.title=`UniJourney — Roadmap for ${uni.name}`;
+  document.title=`UniJourney — ${uni.name}`;
   const{final,scores}=calcChance(uni,prof);
   const tier=getTier(final);
   const tierColor=tier==='likely'?'var(--green)':tier==='target'?'var(--amber)':'var(--red)';
   const slotLabel={dream:'Dream',target_1:'Target',target_2:'Target',safe_1:'Safety',safe_2:'Safety'}[slot]||'School';
 
   const dl=uni.deadlines||{};
-  const edDate=dl.ed?normYear(dl.ed):null, eaDate=dl.ea?normYear(dl.ea):null, rdDate=dl.rd?normYear(dl.rd):null;
-  const daysED=daysUntil(edDate), daysEA=daysUntil(eaDate), daysRD=daysUntil(rdDate);
+  const edDate=dl.ed?normYear(dl.ed):null,eaDate=dl.ea?normYear(dl.ea):null,rdDate=dl.rd?normYear(dl.rd):null;
+  const daysED=daysUntil(edDate),daysEA=daysUntil(eaDate),daysRD=daysUntil(rdDate);
 
-  const hasSat=!!(prof.sat||prof.act), hasGpa=!!prof.gpa, hasIelts=!!prof.ielts;
-  const hasEssay=(prof.essay||'').length>200, hasDraft=(prof.essay||'').length>50;
+  const hasSat=!!(prof.sat||prof.act),hasGpa=!!prof.gpa,hasIelts=!!prof.ielts;
+  const hasEssay=(prof.essay||'').length>200,hasDraft=(prof.essay||'').length>50;
   const actCount=(prof.activities||[]).filter(Boolean).length;
   const p25=(uni.sat_reading_25||0)+(uni.sat_math_25||0);
   const p75=(uni.sat_reading_75||0)+(uni.sat_math_75||0);
 
-  function ns(daysLeft,done){
-    if(done)return'done';
-    if(daysLeft!==null&&daysLeft<0)return'done';
-    if(daysLeft!==null&&daysLeft<21)return'urgent';
-    return'current';
-  }
+  function ns(dl,done){if(done)return'done';if(dl!==null&&dl<0)return'done';if(dl!==null&&dl<21)return'urgent';return'current';}
 
   const nodes=[
     {emoji:'🧭',label:'Complete profile',sub:'Foundation',status:(hasGpa&&hasSat)?'done':'current',
@@ -194,69 +238,68 @@ async function init(){
     {emoji:'🌐',label:'IELTS',sub:hasIelts?`Score: ${prof.ielts}`:'Not entered',
      status:hasIelts&&scores.ielts>=60?'done':hasIelts?'current':'current',
      title:'Secure your English proficiency score',
-     desc:!hasIelts?`This school requires IELTS ${uni.ielts_min}+. Register at ielts.org.`:scores.ielts>=75?`Your IELTS ${prof.ielts} meets the ${uni.ielts_min} minimum. ✓`:`Your IELTS ${prof.ielts} meets the minimum — aiming for ${(uni.ielts_min+0.5).toFixed(1)} would strengthen your application.`,
+     desc:!hasIelts?`This school requires IELTS ${uni.ielts_min}+. Register at ielts.org.`:scores.ielts>=75?`Your IELTS ${prof.ielts} meets the ${uni.ielts_min} minimum ✓`:`Your IELTS ${prof.ielts} meets the minimum — aiming for ${(uni.ielts_min+0.5).toFixed(1)} would strengthen your position.`,
      tags:[{l:'IELTS',c:'metric-ielts'},{l:`Min: ${uni.ielts_min}`,c:''}]},
     {emoji:'🏅',label:'Extracurriculars',sub:actCount>=4?'✓ Strong':actCount>=2?'~ Building':'⚠ Needs work',
      status:actCount>=3?'done':'current',
      title:'Build your extracurricular profile',
-     desc:actCount<2?'Add clubs, competitions, volunteering, research, sports. 2–3 deep activities beat 10 shallow ones.':actCount<4?'Add leadership roles or national-level achievements to stand out.': `${actCount} activities on file. Frame each with concrete impact.`,
+     desc:actCount<2?'Add clubs, competitions, volunteering, research, sports. 2–3 deep activities beat 10 shallow ones.':actCount<4?'Add leadership roles or national-level achievements.':` ${actCount} activities on file. Frame each with concrete impact.`,
      tags:[{l:'Activities',c:'metric-ec'},{l:`${actCount} added`,c:''}]},
     {emoji:'✍️',label:'Personal statement',sub:hasEssay?'✓ Done':hasDraft?'~ Draft':'⚠ Not started',
      status:hasEssay?'done':hasDraft?'current':'current',
      title:'Write your personal statement',
-     desc:hasEssay?'Essay saved. Get feedback and produce a polished final version.':hasDraft?'You have a draft — keep writing. Aim for 600+ words. Paste the full essay in your profile for a quality score.':'Choose a moment that reveals your character. First draft due to yourself by Sep 1.',
+     desc:hasEssay?'Essay saved. Get feedback and write a polished final version.':hasDraft?'You have a draft — keep writing. Aim for 600+ words.':'Choose a moment that reveals your character. First draft due to yourself by Sep 1.',
      tags:[{l:'Personal Statement',c:'metric-essay'},{l:'650 words',c:''}]},
     ...(uni.requirements?.supplement&&uni.requirements.supplement!=='None'?[{
       emoji:'📄',label:`${uni.name.split(' ')[0]} essay`,sub:'Supplement',status:'current',
       title:`Write the ${uni.name.split(' ')[0]} supplement`,
-      desc:`Required: ${uni.requirements.supplement}. Research the school deeply. Reference specific programs or professors.`,
-      tags:[{l:'Supplement',c:'metric-essay'},{l:uni.requirements.supplement,c:''}]}]:[]),
+      desc:`Required: ${uni.requirements.supplement}. Research the school deeply — reference specific programs.`,
+      tags:[{l:'Supplement',c:'metric-essay'}]}]:[]),
     {emoji:'📬',label:'Recommendations',sub:'Request now',status:'current',
      title:'Request recommendation letters',
      desc:`Ask 2 teachers and your counselor now. ${uni.name.split(' ')[0]} requires: ${(uni.requirements||{}).recs||'see school website'}. Give them a brag sheet.`,
      tags:[{l:'Recs',c:''},{l:(uni.requirements||{}).recs||'See school site',c:''}]},
-    ...(edDate?[{emoji:'🚀',label:'Submit ED',sub:fmt(edDate),
-      status:ns(daysED,false),
+    ...(edDate?[{emoji:'🚀',label:'Submit ED',sub:fmt(edDate),status:ns(daysED,false),
       title:`Submit Early Decision — ${fmt(edDate)}`,
-      desc:`ED is binding. Only apply if ${uni.name} is truly your first choice. ED applicants have a higher admit rate.`,
+      desc:`ED is binding. Only apply if ${uni.name} is truly your first choice. ED applicants have a significantly higher admit rate.`,
       tags:[{l:'ED Binding',c:'deadline'},{l:daysED!=null?(daysED<0?'Passed':daysED+' days'):' ',c:'deadline'}]}]:[]),
-    ...(eaDate&&!edDate?[{emoji:'⚡',label:'Submit EA',sub:fmt(eaDate),
-      status:ns(daysEA,false),
+    ...(eaDate&&!edDate?[{emoji:'⚡',label:'Submit EA',sub:fmt(eaDate),status:ns(daysEA,false),
       title:`Submit Early Action — ${fmt(eaDate)}`,
-      desc:`Non-binding. Hear back in December. Applying EA often significantly improves your chances.`,
+      desc:`Non-binding — hear back in December. Applying EA often doubles your admit chances vs RD.`,
       tags:[{l:'EA Non-binding',c:'metric-sat'},{l:daysEA!=null?(daysEA<0?'Passed':daysEA+' days'):' ',c:'deadline'}]}]:[]),
-    ...(rdDate?[{emoji:'📮',label:'Submit RD',sub:fmt(rdDate),
-      status:ns(daysRD,false),
+    ...(rdDate?[{emoji:'📮',label:'Submit RD',sub:fmt(rdDate),status:ns(daysRD,false),
       title:`Regular Decision — ${fmt(rdDate)}`,
-      desc:`Submit complete application with all materials. Check your Common App dashboard the day before.`,
+      desc:`Submit complete application with all materials confirmed. Check your Common App the day before.`,
       tags:[{l:'Regular Decision',c:''},{l:daysRD!=null?(daysRD<0?'Passed':daysRD+' days'):' ',c:'deadline'}]}]:[]),
     {emoji:'🎯',label:'Decision day',sub:'Apr 2026',status:'locked',
      title:'Receive your decision',
-     desc:'ED: December. EA/RD: March–April 2026. Compare financial aid packages. Commit by May 1.',
+     desc:'ED: December. EA/RD: March–April 2026. Compare financial aid packages. Commit by May 1, 2026.',
      tags:[{l:'Decision period',c:''},{l:'Commit by May 1',c:''}]},
   ];
 
   window._nodes=nodes;
   const doneCount=nodes.filter(n=>n.status==='done').length;
   const xp=doneCount*100;
-  const positions=['center','right','left','right','left','right','left','center','right','left','center'];
+  const positions=['center','right','left','right','left','right','left','center','right','left','center','center'];
 
-  // Build path HTML
+  // Build node rows + SVG road
+  // We'll draw the road as a single SVG path behind all nodes
+  const nodePositions=[]; // will be filled after render, use CSS approach instead
+
   const pathHTML=nodes.map((node,i)=>{
     const pos=positions[i%positions.length];
-    const prevDone=i>0&&nodes[i-1].status==='done';
-    const connCls=node.status==='done'?'conn-done':prevDone?'conn-active':'conn-future';
-    return`${i>0?`<div class="connector ${connCls} ${pos}"></div>`:''}
-    <div class="node-row ${pos}">
+    return`<div class="node-row ${pos}" id="nr-${i}">
       <div class="gnode" onclick="openPopup(${i})">
         <div class="gnode-circle ${node.status}">
           ${node.emoji}
           ${node.status==='done'?'<div class="gcheck">✓</div>':''}
+          ${node.status==='locked'?'<div class="lock-icon">🔒</div>':''}
         </div>
         <div class="gnode-lbl">${node.label}</div>
         <div class="gnode-sub">${node.sub}</div>
       </div>
-    </div>`;
+    </div>
+    ${i<nodes.length-1?'<div class="node-spacer" id="sp-'+i+'"></div>':''}`;
   }).join('');
 
   document.getElementById('roadContent').innerHTML=`
@@ -277,9 +320,9 @@ async function init(){
         <div class="rh-lbl">your chance</div>
       </div>
     </div>
-    <div class="xp-bar">
+    <div class="xp-bar-wrap">
       <div class="xp-label">⚡ ${xp} XP</div>
-      <div class="xp-track"><div class="xp-fill" style="width:${Math.round(doneCount/nodes.length*100)}%;"></div></div>
+      <div class="xp-track"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
       <div class="xp-count">${doneCount}/${nodes.length}</div>
     </div>
     <div class="stats-panel">
@@ -290,20 +333,33 @@ async function init(){
       <div class="sb-icon">🏁</div>
       <div class="sb-txt">
         <strong>Start your journey here</strong>
-        <span>Tap each milestone to see what to do. Complete them to increase your ${final}% chance.</span>
+        <span>Tap each milestone for what to do. Complete them to boost your ${final}% chance.</span>
       </div>
     </div>
-    <div class="game-path">${pathHTML}</div>
-    <div class="connector conn-active center"></div>
-    <div class="destination">
-      <div class="dest-glow"></div>
-      <span class="dest-building">🏛️</span>
-      <div class="dest-label">Your destination</div>
-      <div class="dest-name">${uni.name}</div>
-      <div class="dest-sub">Complete all milestones to maximise your ${final}% chance</div>
+    <div class="path-section" id="pathSection">
+      <svg class="road-svg" id="roadSvg"></svg>
+      <div class="game-path" id="gamePath">${pathHTML}</div>
+      <div class="destination">
+        <div class="dest-glow"></div>
+        <span class="dest-building">🏛️</span>
+        <div class="dest-label">Your destination</div>
+        <div class="dest-name">${uni.name}</div>
+        <div class="dest-sub">Complete all milestones to maximise your ${final}% chance</div>
+      </div>
     </div>`;
 
+  // Animate XP bar
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      const f=document.getElementById('xpFill');
+      if(f)f.style.width=Math.round(doneCount/nodes.length*100)+'%';
+    },200);
+  });
+
+  // Render radar
   document.getElementById('radarWrap').innerHTML=buildRadar(scores,tier,220);
+
+  // Score bars
   const barData=[
     {l:'SAT/ACT',s:scores.sat,c:'#9FACFB'},{l:'GPA',s:scores.gpa,c:'#E0A020'},
     {l:'IELTS',s:scores.ielts,c:'#2DBF7B'},{l:'Essay',s:scores.essay,c:'#B8C4FF'},
@@ -316,6 +372,64 @@ async function init(){
       <div class="sb-trk"><div class="sb-fill2" style="width:${Math.round(b.s)}%;background:${b.c};"></div></div>
       <div class="sb-pct">${Math.round(b.s)}%</div>
     </div>`).join('');
+
+  // Draw road SVG after DOM is painted
+  requestAnimationFrame(()=>requestAnimationFrame(()=>drawRoad(nodes,positions)));
+}
+
+function drawRoad(nodes,positions){
+  const section=document.getElementById('pathSection');
+  const svg=document.getElementById('roadSvg');
+  if(!section||!svg)return;
+  const W=section.offsetWidth, H=section.offsetHeight;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('width',W);
+  svg.setAttribute('height',H);
+
+  // Collect center points of each node circle
+  const pts=[];
+  nodes.forEach((_,i)=>{
+    const row=document.getElementById('nr-'+i);
+    if(!row)return;
+    const circle=row.querySelector('.gnode-circle');
+    if(!circle)return;
+    const rr=circle.getBoundingClientRect();
+    const sr=section.getBoundingClientRect();
+    const cx=rr.left-sr.left+rr.width/2;
+    const cy=rr.top-sr.top+rr.height/2;
+    pts.push({x:cx,y:cy,status:nodes[i].status});
+  });
+  if(pts.length<2)return;
+
+  // Build smooth SVG path through all points
+  let d='M '+pts[0].x.toFixed(1)+' '+pts[0].y.toFixed(1);
+  for(let i=1;i<pts.length;i++){
+    const prev=pts[i-1],curr=pts[i];
+    const cpx1=prev.x+(curr.x-prev.x)*0.5;
+    const cpy1=prev.y;
+    const cpx2=prev.x+(curr.x-prev.x)*0.5;
+    const cpy2=curr.y;
+    d+=` C ${cpx1.toFixed(1)} ${cpy1.toFixed(1)}, ${cpx2.toFixed(1)} ${cpy2.toFixed(1)}, ${curr.x.toFixed(1)} ${curr.y.toFixed(1)}`;
+  }
+
+  // Road width layers
+  const roadW=28, laneW=18, dashW=10;
+
+  // Shadow
+  svg.innerHTML=`
+    <path d="${d}" fill="none" stroke="rgba(0,0,0,0.5)" stroke-width="${roadW+6}" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Road base -->
+    <path d="${d}" fill="none" stroke="#1a1f2e" stroke-width="${roadW}" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Road edge lines -->
+    <path d="${d}" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="${roadW}" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${d}" fill="none" stroke="#1a1f2e" stroke-width="${laneW}" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Road surface -->
+    <path d="${d}" fill="none" stroke="#252840" stroke-width="${laneW-2}" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Centre dashes -->
+    <path d="${d}" fill="none" stroke="rgba(255,220,80,0.4)" stroke-width="2" stroke-linecap="round" stroke-dasharray="12 10" stroke-linejoin="round"/>
+    <!-- Progress overlay (done path) -->
+    <path id="donePath" d="${d}" fill="none" stroke="rgba(45,191,123,0.5)" stroke-width="4" stroke-linecap="round" stroke-dasharray="14 8"/>
+  `;
 }
 
 function openPopup(idx){
